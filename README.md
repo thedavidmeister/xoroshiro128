@@ -2,6 +2,8 @@
 
 Clojure implementation of the xoroshiro128+ PRNG described at http://xoroshiro.di.unimi.it/
 
+[![Clojars Project](https://img.shields.io/clojars/v/xoroshiro128.svg)](https://clojars.org/xoroshiro128)
+
 ## Usage
 
 FIXME
