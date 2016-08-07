@@ -1,6 +1,6 @@
 # xoroshiro128
 
-A Clojure library designed to ... well, that part is up to you.
+Clojure implementation of the xoroshiro128+ PRNG described at http://xoroshiro.di.unimi.it/
 
 ## Usage
 
