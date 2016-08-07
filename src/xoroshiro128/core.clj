@@ -1,21 +1,19 @@
-(ns xoroshiro128.core)
+(ns xoroshiro128.core
+  (:refer-clojure :exclude [next rand]))
 
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* :warn-on-boxed)
 
 (defprotocol IPRNG
-  (presult [_])
-  (pnext [_]))
+  (result [_])
+  (next [_]))
 
 (deftype PRNG [^long a ^long b]
   IPRNG
-  (presult
+  (result
     [_]
-    ; We need to auto-promote integers as the original C implementation relied
-    ; on unsigned integers. This doesn't affect bitwise operations, but will
-    ; trip up standard clojure addition with +.
     (+ a b))
-  (pnext
+  (next
     [_]
     (let [x   (bit-xor a b)
           a'  (bit-xor  (Long/rotateLeft a 55)
@@ -28,12 +26,12 @@
 
 (defn generator
   [a b]
-  (map presult (iterate pnext (PRNG. a b))))
+  (map result (iterate next (PRNG. a b))))
 
-(def g (atom (PRNG. 1 3)))
+(def simple-state (atom (PRNG. 1 3)))
 
-(defn next'!
+(defn rand
   []
-  (let [result (presult @g)]
-    (swap! g pnext)
+  (let [result (result @simple-state)]
+    (swap! simple-state next)
     result))
