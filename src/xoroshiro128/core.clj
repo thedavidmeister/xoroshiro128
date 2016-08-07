@@ -5,20 +5,27 @@
 (set! *unchecked-math* :warn-on-boxed)
 
 (defprotocol IPRNG
-  (result [_])
-  (next [_]))
+  "A single, seedable state in a PRNG sequence"
+  (value [_] "The value of this state, as a long")
+  (next [_] "The next state in the sequence"))
+
+; Splitmix64
+; Reference C implementation at http://xoroshiro.di.unimi.it/splitmix64.c
 
 (deftype Splitmix64 [^long x]
   IPRNG
-  (result
+  (value
     [_]
-    (let [z     (+ x (unchecked-long 0x9E3779B97F4A7C15))
-          z'    (*  (bit-xor z (unsigned-bit-shift-right z 30))
-                    (unchecked-long 0xBF58476D1CE4E5B9))
-          z''   (*  (bit-xor z (unsigned-bit-shift-right z 27))
-                    (unchecked-long 0x94D049BB133111EB))
-          z'''  (bit-xor z'' (unsigned-bit-shift-right z'' 31))]
-      z'''))
+    (as-> x x
+      (+ x (unchecked-long 0x9E3779B97F4A7C15))
+
+      (*  (bit-xor x (unsigned-bit-shift-right x 30))
+          (unchecked-long 0xBF58476D1CE4E5B9))
+
+      (*  (bit-xor x (unsigned-bit-shift-right x 27))
+          (unchecked-long 0x94D049BB133111EB))
+
+      (*  (bit-xor x (unsigned-bit-shift-right x 31)))))
 
   (next
     [_]
@@ -26,9 +33,9 @@
 
 (defn splitmix64 [x] (Splitmix64. x))
 
-(deftype Xoroshiro128 [^long a ^long b]
+(deftype Xoroshiro128+ [^long a ^long b]
   IPRNG
-  (result
+  (value
     [_]
     (+ a b))
 
@@ -39,18 +46,18 @@
                         x
                         (bit-shift-left x 14))
           b'  (Long/rotateLeft x 36)]
-      (Xoroshiro128. a' b'))))
+      (Xoroshiro128+. a' b'))))
 
-(defn xoroshiro128 [a b] (Xoroshiro128. a b))
+(defn xoroshiro128+ [a b] (Xoroshiro128+. a b))
 
 (defn generator
   [a b]
-  (map result (iterate next (Xoroshiro128. a b))))
+  (map value (iterate next (Xoroshiro128+. a b))))
 
-(def simple-state (atom (Xoroshiro128. 1 2)))
+(def simple-state (atom (Xoroshiro128+. 1 2)))
 
 (defn rand
   []
-  (let [result (result @simple-state)]
+  (let [result (value @simple-state)]
     (swap! simple-state next)
     result))
