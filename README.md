@@ -83,6 +83,45 @@ Additionally, we can inspect any item in the sequence to extract the seed, allow
 
 The seeds for a xoroshiro128+ is `a` and `b`. The seed for a splitmix64 is `a`.
 
+## Performance
+
+I did some basic benchmarking on my laptop using [criterium](https://github.com/hugoduncan/criterium) and found nearly a 40% speed improvement using xoroshiro128+ vs. the default Java PRNG.
+
+As always with benchmarking, YMMV.
+
+I compared `(.nextLong (java.util.Random.))` against `(xoroshiro128.core/rand)`.
+
+Results from `java.util.Random`:
+
+````
+Evaluation count : 802245600 in 60 samples of 13370760 calls.
+Execution time mean : 75.230975 ns
+Execution time std-deviation : 1.344983 ns
+Execution time lower quantile : 73.255333 ns ( 2.5%)
+Execution time upper quantile : 78.972937 ns (97.5%)
+Overhead used : 1.710409 ns
+
+Found 4 outliers in 60 samples (6.6667 %)
+low-severe	 3 (5.0000 %)
+low-mild	 1 (1.6667 %)
+Variance from outliers : 7.7675 % Variance is slightly inflated by outliers
+````
+
+Results from `xoroshiro128.core/rand`:
+
+````
+Evaluation count : 2080459080 in 60 samples of 34674318 calls.
+Execution time mean : 27.986250 ns
+Execution time std-deviation : 0.429291 ns
+Execution time lower quantile : 27.290695 ns ( 2.5%)
+Execution time upper quantile : 28.888978 ns (97.5%)
+Overhead used : 1.710409 ns
+
+Found 5 outliers in 60 samples (8.3333 %)
+low-severe	 5 (8.3333 %)
+Variance from outliers : 1.6389 % Variance is slightly inflated by outliers
+````
+
 ## License
 
 The xoroshiro128+ algorithm reference implementation in C was developed by David Blackman and Sebastiano Vigna in 2016 under a Creative Commons public domain license https://creativecommons.org/publicdomain/zero/1.0/.
