@@ -57,14 +57,29 @@
 
 (defn xoroshiro128+ [a b] (Xoroshiro128+. a b))
 
-(defn generator
-  [a b]
-  (map value (iterate next (Xoroshiro128+. a b))))
+; (defn generator
+;   [a b]
+;   (map value (iterate next (Xoroshiro128+. a b))))
 
-(def simple-state (atom (Xoroshiro128+. 1 2)))
+; Simple PRNG
+; Can be re-seeded ad-hoc using seed-rand!
+; Relies on mutable state.
+
+(def ^:private rand-state (atom nil))
+
+(defn seed-rand!
+  "Takes a long, passes it to splitmix64 to create two new longs, then seeds rand with those new longs."
+  [^long seed]
+  (let [splitmix (Splitmix64. seed)
+        s1 (value (next splitmix))
+        s2 (value (next (next splitmix)))]
+    (reset! rand-state (Xoroshiro128+. s1 s2))))
+
+(seed-rand! (.nextLong (java.util.Random.)))
 
 (defn rand
+  "Generate a random long using Xoroshiro128+ seeded with splitmix64."
   []
-  (let [result (value @simple-state)]
-    (swap! simple-state next)
+  (let [result (value @rand-state)]
+    (swap! rand-state next)
     result))
