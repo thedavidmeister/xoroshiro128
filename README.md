@@ -49,7 +49,7 @@ Both xoroshiro128+ and splitmix64 are implemented as immutable types with a shar
 
 This protocol allows us to construct a lazy sequence from a seed quite easily with `iterate` and `map`.
 
-````
+```clojure
 (require '[xoroshiro128.core :as x])
 (def seed 12345)
 (def my-rand-seq (map x/value (iterate x/next (x/xoroshiro128+ seed))))
@@ -59,7 +59,7 @@ This protocol allows us to construct a lazy sequence from a seed quite easily wi
 
 Additionally, we can inspect any item in the sequence to extract the seed, allowing us to resume the sequence from that point later.
 
-````
+```clojure
 (require '[xoroshiro128.core :as x])
 (def seed 9876)
 (def my-rand-item (-> (x/xoroshiro128+ seed) x/next x/next x/next))
