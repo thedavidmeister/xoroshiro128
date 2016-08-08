@@ -17,21 +17,28 @@
   (value
     [_]
     (as-> x x
-      (+ x (unchecked-long 0x9E3779B97F4A7C15))
+      ; 0x9E3779B97F4A7C15 = -7046029254386353131
+      (+ x -7046029254386353131)
 
+      ; 0xBF58476D1CE4E5B9 = -4658895280553007687
       (*  (bit-xor x (unsigned-bit-shift-right x 30))
-          (unchecked-long 0xBF58476D1CE4E5B9))
+          -4658895280553007687)
 
+      ; 0x94D049BB133111EB = -7723592293110705685
       (*  (bit-xor x (unsigned-bit-shift-right x 27))
-          (unchecked-long 0x94D049BB133111EB))
+          -7723592293110705685)
 
       (*  (bit-xor x (unsigned-bit-shift-right x 31)))))
 
   (next
     [_]
-    (Splitmix64. (+ x (unchecked-long 0x9E3779B97F4A7C15)))))
+    ; 0x9E3779B97F4A7C15 = -7046029254386353131
+    (Splitmix64. (+ x -7046029254386353131))))
 
 (defn splitmix64 [x] (Splitmix64. x))
+
+; Xoroshiro128+
+; Reference C implementation http://xoroshiro.di.unimi.it/xoroshiro128plus.c
 
 (deftype Xoroshiro128+ [^long a ^long b]
   IPRNG
