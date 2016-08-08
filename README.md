@@ -2,7 +2,7 @@
 
 Clojure implementation of the xoroshiro128+ PRNG described at http://xoroshiro.di.unimi.it/
 
-The algorithm has been shown to be fast and produce superior statistical results to many PRNGs shipped with languages, including Java. The statistical results have been verified in both PractRand and TestU01 by the authors.
+The algorithm has been shown to be fast and produce superior statistical results to many PRNGs shipped with languages, [including Java](http://stackoverflow.com/questions/453479/how-good-is-java-util-random). The statistical results have been verified in both PractRand and TestU01 by the authors.
 
 xoroshiro128+ is designed to be the successor to xorshift128+, currently used in the JavaScript engines of Chrome, Firefox and Safari.
 
