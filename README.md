@@ -6,7 +6,7 @@ The algorithm has been shown to be fast and produce superior statistical results
 
 xoroshiro128+ is designed to be the successor to xorshift128+, currently used in the JavaScript engines of Chrome, Firefox and Safari.
 
-Both xorshift128+ and xoroshiro128+ have a period of 2<sup>128</sup> but xoroshiro128+ is benchmarked as 20% faster and with 20% fewer failures in BigCrush than its predecessor.
+Both xorshift128+ and xoroshiro128+ have a period of 2<sup>128</sup> but xoroshiro128+ is **benchmarked by the authors as 20% faster and with 20% fewer failures in BigCrush than its predecessor.**
 
 [![Clojars Project](https://img.shields.io/clojars/v/xoroshiro128.svg)](https://clojars.org/xoroshiro128)
 
