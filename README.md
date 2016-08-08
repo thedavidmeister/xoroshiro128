@@ -122,6 +122,12 @@ low-severe	 5 (8.3333 %)
 Variance from outliers : 1.6389 % Variance is slightly inflated by outliers
 ````
 
+## Cryptography
+
+xoroshiro128+ and the family of related generators are not cryptographically secure or intended for use in cryptography.
+
+These generators are designed to produce a statistically uniform distribution at high speeds, with a reasonable period.
+
 ## License
 
 The xoroshiro128+ algorithm reference implementation in C was developed by David Blackman and Sebastiano Vigna in 2016 under a Creative Commons public domain license https://creativecommons.org/publicdomain/zero/1.0/.
