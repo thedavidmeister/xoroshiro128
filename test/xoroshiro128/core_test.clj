@@ -26,3 +26,30 @@
     (is (= 1984452702661322627 (xoroshiro128.core/value (xoroshiro128.core/splitmix64 5165464252035433577))))
     (is (= 8603550955848928026 (xoroshiro128.core/value (xoroshiro128.core/splitmix64 -3762096910555017800))))
     (is (= 2259666501077083692 (xoroshiro128.core/value (xoroshiro128.core/splitmix64 3265627685425294603))))))
+
+(deftest xoroshiro128+
+  []
+  (let [x (x/xoroshiro128+ 0 1)]
+    (is (= 1 (x/value x)))
+    (is (= 68719493121 (x/value (x/next x))))
+    (is (= 38280734540038433 (x/value (x/next (x/next x))))))
+
+  (let [x (x/xoroshiro128+ 1 0)]
+    (is (= 1 (x/value x)))
+    (is (= 36028865738457089 (x/value (x/next x))))
+    (is (= 2322306399469857 (x/value (x/next (x/next x))))))
+
+  (let [x (x/xoroshiro128+ 1 1)]
+    (is (= 2 (x/value x)))
+    (is (= 36028797018963968 (x/value (x/next x))))
+    (is (= 36099165897359360 (x/value (x/next (x/next x))))))
+
+  (let [x (x/xoroshiro128+ -2288729261622650145 -6926512846790308433)]
+    (is (= -9215242108412958578 (x/value x)))
+    (is (= -7532115046694008527 (x/value (x/next x))))
+    (is (= 7536573313527036548 (x/value (x/next (x/next x))))))
+
+  (let [x (x/xoroshiro128+ 6229099873966726092 6043473223518792799)]
+    (is (= -6174170976224032725 (x/value x)))
+    (is (= -709792299180922954 (x/value (x/next x))))
+    (is (= -6877720052118061367 (x/value (x/next (x/next x)))))))
