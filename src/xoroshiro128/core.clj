@@ -12,30 +12,30 @@
 ; Splitmix64
 ; Reference C implementation at http://xoroshiro.di.unimi.it/splitmix64.c
 
-(deftype Splitmix64 [^long x]
+(deftype Splitmix64 [^long a]
   IPRNG
   (value
     [_]
-    (as-> x x
+    (as-> a a
       ; 0x9E3779B97F4A7C15 = -7046029254386353131
-      (+ x -7046029254386353131)
+      (+ a -7046029254386353131)
 
       ; 0xBF58476D1CE4E5B9 = -4658895280553007687
-      (*  (bit-xor x (unsigned-bit-shift-right x 30))
+      (*  (bit-xor a (unsigned-bit-shift-right a 30))
           -4658895280553007687)
 
       ; 0x94D049BB133111EB = -7723592293110705685
-      (*  (bit-xor x (unsigned-bit-shift-right x 27))
+      (*  (bit-xor a (unsigned-bit-shift-right a 27))
           -7723592293110705685)
 
-      (*  (bit-xor x (unsigned-bit-shift-right x 31)))))
+      (*  (bit-xor a (unsigned-bit-shift-right a 31)))))
 
   (next
     [_]
     ; 0x9E3779B97F4A7C15 = -7046029254386353131
-    (Splitmix64. (+ x -7046029254386353131))))
+    (Splitmix64. (+ a -7046029254386353131))))
 
-(defn splitmix64 [x] (Splitmix64. x))
+(defn splitmix64 [a] (Splitmix64. a))
 
 ; Xoroshiro128+
 ; Reference C implementation http://xoroshiro.di.unimi.it/xoroshiro128plus.c
@@ -55,11 +55,13 @@
           b'  (Long/rotateLeft x 36)]
       (Xoroshiro128+. a' b'))))
 
-(defn xoroshiro128+ [a b] (Xoroshiro128+. a b))
-
-; (defn generator
-;   [a b]
-;   (map value (iterate next (Xoroshiro128+. a b))))
+(defn xoroshiro128+
+  ([^long x]
+   (let [ splitmix (Splitmix64. x)
+          a (-> splitmix next value)
+          b (-> splitmix next next value)]
+    (Xoroshiro128+. a b)))
+  ([^long a ^long b] (Xoroshiro128+. a b)))
 
 ; Simple PRNG
 ; Can be re-seeded ad-hoc using seed-rand!
@@ -69,11 +71,10 @@
 
 (defn seed-rand!
   "Takes a long, passes it to splitmix64 to create two new longs, then seeds rand with those new longs."
-  [^long seed]
-  (let [splitmix (Splitmix64. seed)
-        s1 (value (next splitmix))
-        s2 (value (next (next splitmix)))]
-    (reset! rand-state (Xoroshiro128+. s1 s2))))
+  ([^long x]
+   (reset! rand-state (xoroshiro128+ x)))
+  ([^long a b]
+   (reset! rand-state (xoroshiro128+ a b))))
 
 (seed-rand! (.nextLong (java.util.Random.)))
 

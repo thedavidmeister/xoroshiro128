@@ -3,6 +3,23 @@
             [criterium.core]
             [xoroshiro128.core :as x]))
 
+(defn rand-long
+  []
+  (.nextLong (java.util.Random.)))
+
+(deftest seed-extraction
+  ; We should be able to take a seed from any point in a sequence and seed a new
+  ; identical sequence that starts from the first point.
+  (let [gen-one (x/xoroshiro128+ (rand-long))
+        gen-one' (-> gen-one x/next x/next x/next)
+        a (.-a gen-one')
+        b (.-b gen-one')
+        gen-two (x/xoroshiro128+ a b)]
+    (is (=  (-> gen-two x/next x/value)
+            (-> gen-one' x/next x/value)))
+    (is (=  (-> gen-two x/next x/next x/value)
+            (-> gen-one' x/next x/next x/value)))))
+
 (deftest splitmix64
   []
   (let [next-seed #(+ % -7046029254386353131)
@@ -29,6 +46,20 @@
 
 (deftest xoroshiro128+
   []
+  ; Passing one value should run through splitmix64.
+  (let [x (x/xoroshiro128+ 1)
+        y (x/xoroshiro128+ -4689498862643123097 -534904783426661026)]
+    (is (=  -5224403646069784123
+            (x/value x)
+            (x/value y))))
+
+  (let [x (x/xoroshiro128+ 0)
+        y (x/xoroshiro128+ 7960286522194355700 487617019471545679)]
+    (is (=  8447903541665901379
+            (x/value x)
+            (x/value y))))
+
+  ; Passing two values should pass through to the algorithm.
   (let [x (x/xoroshiro128+ 0 1)]
     (is (= 1 (x/value x)))
     (is (= 68719493121 (x/value (x/next x))))
