@@ -85,7 +85,7 @@ The seeds for a xoroshiro128+ is `a` and `b`. The seed for a splitmix64 is `a`.
 
 ## Performance
 
-I did some basic benchmarking on my laptop using [criterium](https://github.com/hugoduncan/criterium) and found nearly a 40% speed improvement using xoroshiro128+ vs. the default Java PRNG.
+I did some basic benchmarking on my laptop using [criterium](https://github.com/hugoduncan/criterium) and found ~40% speed improvement using xoroshiro128+ vs. the default Java PRNG.
 
 As always with benchmarking, YMMV.
 
