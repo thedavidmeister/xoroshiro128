@@ -72,12 +72,11 @@
           x (atom (Xoroshiro128+. a b))
           j [-4707382666127344949 -2852180941702784734]
           bs (range 64)]
-      (doseq [^long i j]
-        (doseq [^long b bs]
-          (when-not (= 0 (bit-and i (bit-shift-left 1 b)))
-                    (reset! s0 (bit-xor (unchecked-long @s0) (unchecked-long (first (seed @x)))))
-                    (reset! s1 (bit-xor (unchecked-long @s1) (unchecked-long (second (seed @x))))))
-          (swap! x next)))
+      (doseq [^long i j ^long b bs]
+        (when-not (= 0 (bit-and i (bit-shift-left 1 b)))
+                  (reset! s0 (bit-xor (unchecked-long @s0) (unchecked-long (first (seed @x)))))
+                  (reset! s1 (bit-xor (unchecked-long @s1) (unchecked-long (second (seed @x))))))
+        (swap! x next))
       (Xoroshiro128+. @s0 @s1))))
 
 (defn xoroshiro128+
