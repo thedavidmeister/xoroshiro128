@@ -161,3 +161,7 @@ The xoroshiro128+ algorithm reference implementation in C was developed by David
 This clojure implementation is copyright © 2016 David Meister.
 
 Distributed under the [Eclipse Public License version 1.0](http://www.eclipse.org/legal/epl-v10.html).
+
+## Thanks
+
+Thanks to [mscharley](https://github.com/mscharley) for helping to verify the outputs of the test suite.
