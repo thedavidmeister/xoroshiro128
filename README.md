@@ -71,9 +71,9 @@ Additionally, we can inspect any item in the sequence to extract the seed, allow
 ; 3486300715335445982
 
 ; Extract the seed from my-rand-item for later.
-(first (seed my-rand-item)
+(first (x/seed my-rand-item)
 ; -5785456751514194665
-(second (seed my-rand-item)
+(second (x/seed my-rand-item)
 ; 7961309068892779353
 
 ; Create a new item from our extracted seed.
