@@ -64,12 +64,12 @@
     [a b])
 
   (jump
-    [_]
+    [this]
     ; 0xbeac0467eba5facb = -4707382666127344949
     ; 0xd86b048b86aa9922 = -2852180941702784734
     (let [s0 (atom 0)
           s1 (atom 0)
-          x (atom (Xoroshiro128+. a b))
+          x (atom this)
           j [-4707382666127344949 -2852180941702784734]
           bs (range 64)]
       (doseq [^long i j ^long b bs]
