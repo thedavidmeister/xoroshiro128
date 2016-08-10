@@ -15,19 +15,19 @@
   ; (prn "***")
   ; (let [x (x/xoroshiro128+ 1234)]))
     ; (prn (x/jump x))))
-;
-; (deftest seed-extraction
-;   ; We should be able to take a seed from any point in a sequence and seed a new
-;   ; identical sequence that starts from the first point.
-;   (let [gen-one (x/xoroshiro128+ (rand-long))
-;         gen-one' (-> gen-one x/next x/next x/next)
-;         a (.-a gen-one')
-;         b (.-b gen-one')
-;         gen-two (x/xoroshiro128+ a b)]
-;     (is (=  (-> gen-two x/next x/value)
-;             (-> gen-one' x/next x/value)))
-;     (is (=  (-> gen-two x/next x/next x/value)
-;             (-> gen-one' x/next x/next x/value)))))
+
+(deftest seed-extraction
+  ; We should be able to take a seed from any point in a sequence and seed a new
+  ; identical sequence that starts from the first point.
+  (let [gen-one (x/xoroshiro128+ (rand-long))
+        gen-one' (-> gen-one x/next x/next x/next)
+        a (first (x/seed gen-one'))
+        b (second (x/seed gen-one'))
+        gen-two (x/xoroshiro128+ a b)]
+    (is (=  (-> gen-two x/next x/value)
+            (-> gen-one' x/next x/value)))
+    (is (=  (-> gen-two x/next x/next x/value)
+            (-> gen-one' x/next x/next x/value)))))
 ;
 (deftest splitmix64
   []
