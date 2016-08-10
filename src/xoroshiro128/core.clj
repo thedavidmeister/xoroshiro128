@@ -7,7 +7,9 @@
 (defprotocol IPRNG
   "A single, seedable state in a PRNG sequence"
   (value [_] "The value of this state, as a long")
-  (next [_] "The next state in the sequence"))
+  (next [_] "The next state in the sequence")
+  (seed [_] "A vector of the seed.")
+  (jump [_] "The jump function for this algorithm."))
 
 ; Splitmix64
 ; Reference C implementation at http://xoroshiro.di.unimi.it/splitmix64.c
@@ -33,7 +35,9 @@
   (next
     [_]
     ; 0x9E3779B97F4A7C15 = -7046029254386353131
-    (Splitmix64. (+ a -7046029254386353131))))
+    (Splitmix64. (+ a -7046029254386353131)))
+
+  (seed [_] [a]))
 
 (defn splitmix64 [a] (Splitmix64. a))
 
@@ -53,7 +57,28 @@
                         x
                         (bit-shift-left x 14))
           b'  (Long/rotateLeft x 36)]
-      (Xoroshiro128+. a' b'))))
+      (Xoroshiro128+. a' b')))
+
+  (seed
+    [_]
+    [a b])
+
+  (jump
+    [_]
+    ; 0xbeac0467eba5facb = -4707382666127344949
+    ; 0xd86b048b86aa9922 = -2852180941702784734
+    (let [s0 (atom (long 0))
+          s1 (atom (long 0))
+          x (atom (Xoroshiro128+. a b))
+          j [-4707382666127344949 -2852180941702784734]
+          bs (range 64)]
+      (doseq [^long i j]
+        (doseq [^long b bs]
+          (when (bit-and i (bit-shift-left 1 b))
+                (reset! s0 (bit-xor (unchecked-long @s0) (unchecked-long (first (seed @x)))))
+                (reset! s1 (bit-xor (unchecked-long @s1) (unchecked-long (second (seed @x))))))
+          (swap! x next)))
+      @x)))
 
 (defn xoroshiro128+
   ([^long x]
