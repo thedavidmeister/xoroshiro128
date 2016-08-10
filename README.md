@@ -71,9 +71,9 @@ Additionally, we can inspect any item in the sequence to extract the seed, allow
 ; 3486300715335445982
 
 ; Extract the seed from my-rand-item for later.
-(.-a my-rand-item)
+(first (seed my-rand-item)
 ; -5785456751514194665
-(.-b my-rand-item)
+(second (seed my-rand-item)
 ; 7961309068892779353
 
 ; Create a new item from our extracted seed.
@@ -83,7 +83,7 @@ Additionally, we can inspect any item in the sequence to extract the seed, allow
 ; 3486300715335445982
 ````
 
-The seeds for a xoroshiro128+ is `a` and `b`. The seed for a splitmix64 is `a`.
+Seeds can be extracted as a vector from both `Xoroshiro128+` and `Splitmix64` data with the `seed` function.
 
 ## Jump function
 
