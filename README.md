@@ -83,9 +83,33 @@ Additionally, we can inspect any item in the sequence to extract the seed, allow
 
 The seeds for a xoroshiro128+ is `a` and `b`. The seed for a splitmix64 is `a`.
 
+## Jump function
+
+The Xoroshiro128+ algorithm supports a jump function to easily create new non-overlapping sequences from any starting point.
+
+Calling the `jump` function is equivalent to calling `next` 2<sup>64</sup> times.
+
+As the total period of Xoroshiro128+ is 2<sup>128</sup> it is possible to call jump 2<sup>64</sup> times before needing to reseed a totally new sequence.
+
+If you are using simple calls to `rand` there is a `jump-rand!` function provided to jump the state of `rand`.
+
+```clojure
+(require '[xoroshiro128.core :as x])
+(def seed 55555)
+(def my-rand (x/xoroshiro128+ seed))
+; jumped-rand is equivalent to 2^64 calls to (x/next my-rand)
+(def jumped-rand (x/jump my-rand))
+````
+
+## Correctness
+
+The outputs of Splitmix64 next value, Xoroshiro128+ next value, and the Xoroshiro128+ jump function have all been verified against samples from the reference C implementation.
+
+Dozens of values were generated from https://ideone.com/PuauK5 and fed directly into the expected outputs for the test suite.
+
 ## Performance
 
-I did some basic benchmarking on my laptop using [criterium](https://github.com/hugoduncan/criterium) and found ~40% speed improvement using xoroshiro128+ vs. the default Java PRNG.
+I did some basic benchmarking on my laptop using [criterium](https://github.com/hugoduncan/criterium) and found ~60% speed improvement using xoroshiro128+ vs. the default Java PRNG.
 
 As always with benchmarking, YMMV.
 
@@ -132,6 +156,6 @@ These generators are designed to produce a statistically uniform distribution at
 
 The xoroshiro128+ algorithm reference implementation in C was developed by David Blackman and Sebastiano Vigna in 2016 under a Creative Commons public domain license https://creativecommons.org/publicdomain/zero/1.0/.
 
-This clojure implementation is copyright © 2016 David Meister
+This clojure implementation is copyright © 2016 David Meister.
 
 Distributed under the [Eclipse Public License version 1.0](http://www.eclipse.org/legal/epl-v10.html).

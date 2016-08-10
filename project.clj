@@ -1,4 +1,4 @@
-(defproject xoroshiro128 "0.1.0-SNAPSHOT"
+(defproject xoroshiro128 "1.0.0"
   :description "Clojure implementation of the xoroshiro128+ PRNG described at http://xoroshiro.di.unimi.it/"
   :url "https://github.com/thedavidmeister/xoroshiro128"
   :license {:name "Eclipse Public License"

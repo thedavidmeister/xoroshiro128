@@ -101,6 +101,11 @@
 
 (seed-rand! (.nextLong (java.util.Random.)))
 
+(defn jump-rand!
+  "Jumps rand. Equivalent to calling rand 2^64 times."
+  []
+  (swap! rand-state jump))
+
 (defn rand
   "Generate a random long using Xoroshiro128+ seeded with splitmix64."
   []
