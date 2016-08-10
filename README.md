@@ -107,7 +107,7 @@ If you are using simple calls to `rand` there is a `jump-rand!` function provide
 
 The outputs of Splitmix64 next value, Xoroshiro128+ next value, and the Xoroshiro128+ jump function have all been verified against samples from the reference C implementation.
 
-Dozens of values were generated from https://ideone.com/PuauK5 and fed directly into the expected outputs for the test suite.
+Dozens of values were generated from https://ideone.com/PuauK5 and fed directly into the expected outputs for the [test suite](https://github.com/thedavidmeister/xoroshiro128/blob/master/test/xoroshiro128/core_test.clj).
 
 ## Performance
 
