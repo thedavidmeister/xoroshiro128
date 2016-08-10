@@ -18,7 +18,7 @@ Both xorshift128+ and xoroshiro128+ have a period of 2<sup>128</sup> but xoroshi
 
 Add the following to your dependencies.
 
-`[xoroshiro128 "1.0.0"]`
+`[xoroshiro128 "1.0.1"]`
 
 ### Maven
 
