@@ -19,6 +19,7 @@
 (deftest seed-extraction
   ; We should be able to take a seed from any point in a sequence and seed a new
   ; identical sequence that starts from the first point.
+  ; Xoroshiro128+
   (let [gen-one (x/xoroshiro128+ (rand-long))
         gen-one' (-> gen-one x/next x/next x/next)
         a (first (x/seed gen-one'))
@@ -27,8 +28,18 @@
     (is (=  (-> gen-two x/next x/value)
             (-> gen-one' x/next x/value)))
     (is (=  (-> gen-two x/next x/next x/value)
+            (-> gen-one' x/next x/next x/value))))
+
+  ; Splitmix64
+  (let [gen-one (x/splitmix64 (rand-long))
+        gen-one' (-> gen-one x/next x/next x/next)
+        a (first (x/seed gen-one'))
+        gen-two (x/splitmix64 a)]
+    (is (=  (-> gen-two x/next x/value)
+            (-> gen-one' x/next x/value)))
+    (is (=  (-> gen-two x/next x/next x/value)
             (-> gen-one' x/next x/next x/value)))))
-;
+
 (deftest splitmix64
   []
   (let [next-seed #(+ % -7046029254386353131)
