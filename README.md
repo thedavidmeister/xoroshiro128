@@ -71,13 +71,11 @@ Additionally, we can inspect any item in the sequence to extract the seed, allow
 ; 3486300715335445982
 
 ; Extract the seed from my-rand-item for later.
-(first (x/seed my-rand-item)
-; -5785456751514194665
-(second (x/seed my-rand-item)
-; 7961309068892779353
+(def new-seed (x/seed my-rand-item));
+; [-5785456751514194665 7961309068892779353]
 
 ; Create a new item from our extracted seed.
-(def new-rand-item (x/xoroshiro128+ -5785456751514194665 7961309068892779353))
+(def new-rand-item (apply x/xoroshiro128+ new-seed))
 ; If we seeded correctly, new-rand-item + 1 should be the same as my-rand-item + 1.
 (x/value (x/next new-rand-item))
 ; 3486300715335445982
