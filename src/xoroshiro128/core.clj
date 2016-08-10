@@ -74,11 +74,11 @@
           bs (range 64)]
       (doseq [^long i j]
         (doseq [^long b bs]
-          (when (bit-and i (bit-shift-left 1 b))
-                (reset! s0 (bit-xor (unchecked-long @s0) (unchecked-long (first (seed @x)))))
-                (reset! s1 (bit-xor (unchecked-long @s1) (unchecked-long (second (seed @x))))))
+          (when-not (= 0 (bit-and i (bit-shift-left 1 b)))
+                    (reset! s0 (bit-xor (unchecked-long @s0) (unchecked-long (first (seed @x)))))
+                    (reset! s1 (bit-xor (unchecked-long @s1) (unchecked-long (second (seed @x))))))
           (swap! x next)))
-      @x)))
+      (Xoroshiro128+. @s0 @s1))))
 
 (defn xoroshiro128+
   ([^long x]
