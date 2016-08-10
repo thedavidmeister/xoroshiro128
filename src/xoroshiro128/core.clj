@@ -67,17 +67,17 @@
     [this]
     ; 0xbeac0467eba5facb = -4707382666127344949
     ; 0xd86b048b86aa9922 = -2852180941702784734
-    (let [s0 (atom 0)
-          s1 (atom 0)
-          x (atom this)
-          j [-4707382666127344949 -2852180941702784734]
-          bs (range 64)]
-      (doseq [^long i j ^long b bs]
+    (let [s   (atom [0 0])
+          x   (atom this)]
+      (doseq [^long i [-4707382666127344949 -2852180941702784734]
+              ^long b (range 64)]
         (when-not (= 0 (bit-and i (bit-shift-left 1 b)))
-                  (reset! s0 (bit-xor (unchecked-long @s0) (unchecked-long (first (seed @x)))))
-                  (reset! s1 (bit-xor (unchecked-long @s1) (unchecked-long (second (seed @x))))))
+                  (reset! s (-> #(bit-xor (-> @s % unchecked-long)
+                                          (-> @x seed % unchecked-long))
+                                (map [first last])
+                                vec)))
         (swap! x next))
-      (Xoroshiro128+. @s0 @s1))))
+      (Xoroshiro128+. (first @s) (last @s)))))
 
 (defn xoroshiro128+
   ([^long x]
