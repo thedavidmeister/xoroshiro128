@@ -10,6 +10,8 @@ Both xorshift128+ and xoroshiro128+ have a period of 2<sup>128</sup> but xoroshi
 
 [![Clojars Project](https://img.shields.io/clojars/v/xoroshiro128.svg)](https://clojars.org/xoroshiro128)
 
+[![CircleCI](https://circleci.com/gh/thedavidmeister/xoroshiro128.svg?style=svg)](https://circleci.com/gh/thedavidmeister/xoroshiro128)
+
 ## Installation
 
 ### Leiningen
