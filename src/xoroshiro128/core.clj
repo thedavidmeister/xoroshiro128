@@ -44,6 +44,8 @@
 ; Xoroshiro128+
 ; Reference C implementation http://xoroshiro.di.unimi.it/xoroshiro128plus.c
 
+(declare xoroshiro128+)
+
 (deftype Xoroshiro128+ [^long a ^long b]
   IPRNG
   (value
@@ -67,17 +69,14 @@
     [this]
     ; 0xbeac0467eba5facb = -4707382666127344949
     ; 0xd86b048b86aa9922 = -2852180941702784734
-    (let [s   (atom [0 0])
+    (let [s   (atom '(0 0))
           x   (atom this)]
       (doseq [^long i [-4707382666127344949 -2852180941702784734]
               ^long b (range 64)]
         (when-not (= 0 (bit-and i (bit-shift-left 1 b)))
-                  (reset! s (-> #(bit-xor (-> @s % unchecked-long)
-                                          (-> @x seed % unchecked-long))
-                                (map [first last])
-                                vec)))
+                  (swap! s #(map bit-xor % (seed @x))))
         (swap! x next))
-      (Xoroshiro128+. (first @s) (last @s)))))
+      (apply xoroshiro128+ @s))))
 
 (defn xoroshiro128+
   ([^long x]
