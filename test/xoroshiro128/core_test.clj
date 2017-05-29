@@ -11,8 +11,27 @@
 ;   (criterium.core/bench (rand-long))
 ;   (criterium.core/bench (x/rand)))
 
+(deftest xoroshiro128+--args
+ ; Check the signature of xoroshiro128+ all works as expected.
+ ; 1x 64 bit.
+ (let [seed64 (rand-long)
+       x (x/xoroshiro128+ seed64)
+       seed128 (x/seed64->seed128 seed64)]
+  (is (= seed128 (x/seed x))))
+
+ ; 2x 64 bit
+ (let [a (rand-long)
+       b (rand-long)
+       x (x/xoroshiro128+ a b)]
+  (is (= [a b] (x/seed x))))
+
+ ; 1x 128 bit vector
+ (let [seed128 [(rand-long) (rand-long)]
+       x (x/xoroshiro128+ seed128)]
+  (is (= seed128 (x/seed x)))))
+
 (deftest x-rand
-  (let [seed 1234
+  (let [seed (rand-long)
         x   (x/xoroshiro128+ seed)
         j   (x/jump x)
         j'  (x/jump j)]
