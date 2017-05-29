@@ -78,12 +78,21 @@
         (swap! x next))
       (apply xoroshiro128+ @s))))
 
+(defn seed64->seed128
+ "Uses splitmix to generate a 128 bit seed from a 64 bit seed"
+ [^long x]
+ (let [splitmix (Splitmix64. x)
+       a (-> splitmix next value)
+       b (-> splitmix next next value)]
+  [a b]))
+
 (defn xoroshiro128+
-  ([^long x]
-   (let [ splitmix (Splitmix64. x)
-          a (-> splitmix next value)
-          b (-> splitmix next next value)]
-    (Xoroshiro128+. a b)))
+  ([x]
+   (cond (number? x)
+         (xoroshiro128+ (seed64->seed128 x))
+
+         (sequential? x)
+         (apply xoroshiro128+ x)))
   ([^long a ^long b] (Xoroshiro128+. a b)))
 
 ; Simple PRNG
