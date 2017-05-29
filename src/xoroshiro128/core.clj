@@ -1,5 +1,5 @@
 (ns xoroshiro128.core
-  (:refer-clojure :exclude [next rand]))
+  (:refer-clojure :exclude [next rand uuid?]))
 
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* :warn-on-boxed)
@@ -78,12 +78,36 @@
         (swap! x next))
       (apply xoroshiro128+ @s))))
 
+(defn seed64->seed128
+ "Uses splitmix to generate a 128 bit seed from a 64 bit seed"
+ [^long x]
+ (let [splitmix (Splitmix64. x)
+       a (-> splitmix next value)
+       b (-> splitmix next next value)]
+  [a b]))
+
+(defn uuid?
+ "BC for uuid? function (clojure 1.9)"
+ [u]
+ ; https://github.com/weavejester/medley/blob/master/src/medley/core.cljc#L312
+ (instance? java.util.UUID u))
+
+(defn uuid->seed128
+ "Converts a uuid to a 128 bit seed"
+ [^java.util.UUID u]
+ [(.getMostSignificantBits u)
+  (.getLeastSignificantBits u)])
+
 (defn xoroshiro128+
-  ([^long x]
-   (let [ splitmix (Splitmix64. x)
-          a (-> splitmix next value)
-          b (-> splitmix next next value)]
-    (Xoroshiro128+. a b)))
+  ([x]
+   (cond (number? x)
+         (xoroshiro128+ (seed64->seed128 x))
+
+         (sequential? x)
+         (apply xoroshiro128+ x)
+
+         (uuid? x)
+         (xoroshiro128+ (uuid->seed128 x))))
   ([^long a ^long b] (Xoroshiro128+. a b)))
 
 ; Simple PRNG
