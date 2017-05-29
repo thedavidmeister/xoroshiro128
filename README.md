@@ -81,7 +81,19 @@ Additionally, we can inspect any item in the sequence to extract the seed, allow
 ; 3486300715335445982
 ````
 
-Seeds can be extracted as a vector from both `Xoroshiro128+` and `Splitmix64` data with the `seed` function.
+### Seeds
+
+Seeds for the xoroshiro128+ algorithm must be 128 bit (as the name implies).
+
+As clojure supports 64 bit numbers (longs) but not 128 bit numbers, the seed is represented internally as two longs in a vector.
+
+As mentioned above, if only a single long is available to seed the PRNG, the splitmix algorithm can be used to extrapolate further longs to use as a seed. For convenience `seed64->seed128` is provided convert a 64 bit seed into a 128 bit seed. This function is used internally when only a single long is provided.
+
+It is worth noting that converting a 64 bit seed to a 128 bit seed using `seed64->seed128` is a deterministic process, i.e. any given long always provides the same seed. This means the pool of available seeds is 64 bits, and is not magically increased to 128 bits. Whether this matters or not is entirely contextual, but providing 128 bit seeds will drastically increase the size of the pool of available pseudo random sequences to draw upon.
+
+As UUIDs represent 128 bit numbers, they are also supported for convenience as seed values both via. the `xoroshiro128+` function and `uuid->seed128`.
+
+The current seed value can be extracted as a 128 bit seed vector from both `Xoroshiro128+` and `Splitmix64` type data with the `seed` function.
 
 ## Jump function
 

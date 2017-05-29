@@ -28,6 +28,12 @@
  ; 1x 128 bit vector
  (let [seed128 [(rand-long) (rand-long)]
        x (x/xoroshiro128+ seed128)]
+  (is (= seed128 (x/seed x))))
+
+ ; 1x UUID
+ (let [u (java.util.UUID/randomUUID)
+       seed128 [(.getMostSignificantBits u) (.getLeastSignificantBits u)]
+       x (x/xoroshiro128+ u)]
   (is (= seed128 (x/seed x)))))
 
 (deftest x-rand
