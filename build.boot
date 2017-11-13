@@ -14,15 +14,22 @@
       :version version
       :description "Clojure implementation of the xoroshiro128+ PRNG described at http://xoroshiro.di.unimi.it/"
       :url "https://github.com/thedavidmeister/xoroshiro128"
-      :scm {:url "https://github.com/thedavidmeister/wheel"}
-      :license {:name "Eclipse Public License"
-                :url "http://www.eclipse.org/legal/epl-v10.html"}})
+      :scm {:url "https://github.com/thedavidmeister/wheel"}})
 
 (require
+ '[adzerk.bootlaces :refer :all]
  '[adzerk.boot-test :refer [test]])
+
+(bootlaces! version)
 
 (replace-task!
  [t test]
  (fn [& xs]
   (set-env! :source-paths #{"src" "test"})
   (apply t xs)))
+
+(deftask deploy
+ []
+ (comp
+  (build-jar)
+  (push-snapshot)))
