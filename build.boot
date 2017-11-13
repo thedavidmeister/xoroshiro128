@@ -6,6 +6,7 @@
  :dependencies
  '[[org.clojure/clojure "1.9.0-RC1"]
    [org.clojure/clojurescript "1.9.946"]
+   [cljsjs/long "3.0.3-1"]
 
    [adzerk/boot-cljs "2.1.2" :scope "test"]
    [doo "0.1.7" :scope "test"]
@@ -34,11 +35,13 @@
   (set-env! :source-paths #{"src" "test"})
   (apply t xs)))
 
-(replace-task!
- [t test-cljs]
- (fn [& xs]
-  (set-env! :source-paths #{"src" "test"})
-  (apply t xs)))
+(deftask tests-cljs
+ "Run all the CLJS tests"
+ []
+ (set-env! :source-paths #{"src" "test"})
+ (comp
+  (test-cljs
+   :cljs-opts {:process-shim false})))
 
 (deftask deploy
  []

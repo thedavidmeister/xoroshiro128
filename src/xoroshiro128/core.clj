@@ -1,8 +1,8 @@
 (ns xoroshiro128.core
-  (:refer-clojure :exclude [next rand uuid?]))
+ (:refer-clojure :exclude [next rand uuid?]))
 
-#?(:clj (set! *warn-on-reflection* true))
-#?(:clj (set! *unchecked-math* :warn-on-boxed))
+(set! *warn-on-reflection* true)
+(set! *unchecked-math* :warn-on-boxed)
 
 (defprotocol IPRNG
   "A single, seedable state in a PRNG sequence"
@@ -12,7 +12,7 @@
   (jump [_] "The jump function for this algorithm."))
 
 ; Splitmix64
-; Reference C implementation at http://xoroshiro.di.unimi.it/splitmix64.c
+; Reference C implementation at http://xoroshiro.di.unimi.it/splitmix64.c)
 
 (deftype Splitmix64 [^long a]
   IPRNG
@@ -22,15 +22,17 @@
       ; 0x9E3779B97F4A7C15 = -7046029254386353131
       (+ a -7046029254386353131)
 
-      ; 0xBF58476D1CE4E5B9 = -4658895280553007687
-      (*  (bit-xor a (unsigned-bit-shift-right a 30))
-          -4658895280553007687)
+      ; 0xBF58476D1CE4E5B9 = -4658895280553007687)
+      (*
+       (bit-xor a (unsigned-bit-shift-right a 30))
+       -4658895280553007687)
 
       ; 0x94D049BB133111EB = -7723592293110705685
-      (*  (bit-xor a (unsigned-bit-shift-right a 27))
-          -7723592293110705685)
+      (*
+       (bit-xor a (unsigned-bit-shift-right a 27))
+       -7723592293110705685)
 
-      (*  (bit-xor a (unsigned-bit-shift-right a 31)))))
+      (* (bit-xor a (unsigned-bit-shift-right a 31)))))
 
   (next
     [_]
