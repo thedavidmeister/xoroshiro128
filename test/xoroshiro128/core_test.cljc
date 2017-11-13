@@ -1,7 +1,8 @@
 (ns xoroshiro128.core-test
-  (:require [clojure.test :refer :all]
-            [criterium.core]
-            [xoroshiro128.core :as x]))
+ (:require
+  [clojure.test :refer [deftest is]]
+  #?(:clj [criterium.core])
+  [xoroshiro128.core :as x]))
 
 (defn rand-long
   []

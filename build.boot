@@ -5,9 +5,14 @@
  :source-paths #{"src"}
  :dependencies
  '[[org.clojure/clojure "1.9.0-RC1"]
+   [org.clojure/clojurescript "1.9.946"]
+
+   [adzerk/boot-cljs "2.1.2" :scope "test"]
+   [doo "0.1.7" :scope "test"]
    [criterium "0.4.4" :scope "test"]
    [adzerk/boot-test "RELEASE" :scope "test"]
-   [adzerk/bootlaces "RELEASE" :scope "test"]])
+   [adzerk/bootlaces "RELEASE" :scope "test"]
+   [crisptrutski/boot-cljs-test "0.3.4" :scope "test"]])
 
 (task-options!
  pom {:project project
@@ -18,12 +23,19 @@
 
 (require
  '[adzerk.bootlaces :refer :all]
- '[adzerk.boot-test :refer [test]])
+ '[adzerk.boot-test :refer [test]]
+ '[crisptrutski.boot-cljs-test :refer [test-cljs]])
 
 (bootlaces! version)
 
 (replace-task!
  [t test]
+ (fn [& xs]
+  (set-env! :source-paths #{"src" "test"})
+  (apply t xs)))
+
+(replace-task!
+ [t test-cljs]
  (fn [& xs]
   (set-env! :source-paths #{"src" "test"})
   (apply t xs)))

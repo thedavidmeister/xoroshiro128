@@ -1,8 +1,8 @@
 (ns xoroshiro128.core
   (:refer-clojure :exclude [next rand uuid?]))
 
-(set! *warn-on-reflection* true)
-(set! *unchecked-math* :warn-on-boxed)
+#?(:clj (set! *warn-on-reflection* true))
+#?(:clj (set! *unchecked-math* :warn-on-boxed))
 
 (defprotocol IPRNG
   "A single, seedable state in a PRNG sequence"
