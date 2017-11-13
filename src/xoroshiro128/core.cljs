@@ -1,5 +1,5 @@
 (ns xoroshiro128.core
- (:refer-clojure :exclude [next rand uuid?]))
+ (:refer-clojure :exclude [next rand uuid? long]))
 
 (defprotocol IPRNG
   "A single, seedable state in a PRNG sequence"
@@ -39,8 +39,7 @@
        (.xor a (.shiftRightUnsigned a 27))
        L-0x94D049BB133111EB)
 
-      (.multiply
-       (.xor a (.shiftRightUnsigned a 31)))))
+      (.xor a (.shiftRightUnsigned a 31))))
 
   (next
     [_]
@@ -48,4 +47,21 @@
 
   (seed [_] [a]))
 
-(defn splitmix64 [a] (Splitmix64. a))
+(defn long? [a] (instance? goog.math.Long a))
+
+(defn long
+ [a]
+ {:post [(long? %)]}
+ (cond
+  (long? a)
+  a
+
+  (string? a)
+  (goog.math.Long.fromString a 10)
+
+  (number? a)
+  (goog.math.Long.fromNumber a)))
+
+(defn splitmix64
+ [a]
+ (Splitmix64. (long a)))

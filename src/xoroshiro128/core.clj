@@ -32,7 +32,7 @@
        (bit-xor a (unsigned-bit-shift-right a 27))
        -7723592293110705685)
 
-      (* (bit-xor a (unsigned-bit-shift-right a 31)))))
+      (bit-xor a (unsigned-bit-shift-right a 31))))
 
   (next
     [_]
