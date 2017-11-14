@@ -1,23 +1,22 @@
 (ns xoroshiro128.core
  (:refer-clojure :exclude [next rand uuid?])
  (:require
+  xoroshiro128.prng
   [xoroshiro128.long-int :as l]))
 
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* :warn-on-boxed)
 
-(defprotocol IPRNG
-  "A single, seedable state in a PRNG sequence"
-  (value [_] "The value of this state, as a long")
-  (next [_] "The next state in the sequence")
-  (seed [_] "A vector of the seed.")
-  (jump [_] "The jump function for this algorithm."))
+(def value xoroshiro128.prng/value)
+(def next xoroshiro128.prng/next)
+(def seed xoroshiro128.prng/seed)
+(def jump xoroshiro128.prng/jump)
 
 ; Splitmix64
 ; Reference C implementation at http://xoroshiro.di.unimi.it/splitmix64.c)
 
 (deftype Splitmix64 [^long a]
-  IPRNG
+  xoroshiro128.prng/IPRNG
   (value
     [_]
     (as-> a a
@@ -51,7 +50,7 @@
 (declare xoroshiro128+)
 
 (deftype Xoroshiro128+ [^long a ^long b]
-  IPRNG
+  xoroshiro128.prng/IPRNG
   (value
     [_]
     (+ a b))
