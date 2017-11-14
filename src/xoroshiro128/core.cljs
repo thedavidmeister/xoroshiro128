@@ -2,6 +2,7 @@
  (:require
   xoroshiro128.prng
   xoroshiro128.constants
+  xoroshiro128.splitmix64
   [xoroshiro128.long-int :as l])
  (:refer-clojure :exclude [next rand]))
 
@@ -10,36 +11,7 @@
 (def seed xoroshiro128.prng/seed)
 (def jump xoroshiro128.prng/jump)
 
-; Splitmix64
-; Reference C implementation at http://xoroshiro.di.unimi.it/splitmix64.c)
-
-(deftype Splitmix64 [a]
-  xoroshiro128.prng/IPRNG
-  (value
-    [_]
-    (as-> a a
-
-      (l/add a xoroshiro128.constants/L-0x9E3779B97F4A7C15)
-
-      (l/multiply
-       (l/xor a (l/unsigned-bit-shift-right a 30))
-       xoroshiro128.constants/L-0xBF58476D1CE4E5B9)
-
-      (l/multiply
-       (l/xor a (l/unsigned-bit-shift-right a 27))
-       xoroshiro128.constants/L-0x94D049BB133111EB)
-
-      (l/xor a (l/unsigned-bit-shift-right a 31))))
-
-  (next
-    [_]
-    (Splitmix64. (.add a xoroshiro128.constants/L-0x9E3779B97F4A7C15)))
-
-  (seed [_] [a]))
-
-(defn splitmix64
- [a]
- (Splitmix64. (l/long a)))
+(def splitmix64 xoroshiro128.splitmix64/splitmix64)
 
 ; Xoroshiro128+
 ; Reference C implementation http://xoroshiro.di.unimi.it/xoroshiro128plus.c
@@ -82,7 +54,7 @@
 (defn seed64->seed128
  "Uses splitmix to generate a 128 bit seed from a 64 bit seed"
  [x]
- (let [splitmix (Splitmix64. (long x))
+ (let [splitmix (splitmix64 (long x))
        a (-> splitmix next value)
        b (-> splitmix next next value)]
   [a b]))

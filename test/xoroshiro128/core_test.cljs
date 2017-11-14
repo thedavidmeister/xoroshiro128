@@ -5,11 +5,6 @@
   [xoroshiro128.long-int :as l]
   [xoroshiro128.core :as x]))
 
-(defn rand-long
- []
- (l/long
-  (* 9223372036854775807 (Math/random))))
-
 ; (deftest benchmark
 ;   (criterium.core/bench (rand-long))
 ;   (criterium.core/bench (x/rand)))
@@ -136,7 +131,7 @@
 ;     (is (= 5890875775521162114 (x/value j4)))
 ;     (is (= -3787313022067243265 (x/value j5)))))
 
-(deftest ??seed-extraction
+(deftest ??seed-extraction)
 ;   ; We should be able to take a seed from any point in a sequence and seed a new
 ;   ; identical sequence that starts from the first point.
 ;   ; Xoroshiro128+
@@ -150,19 +145,6 @@
 ;     (is (=  (-> gen-two x/next x/next x/value)
 ;             (-> gen-one' x/next x/next x/value))))
 ;
- ; Splitmix64
- (let [gen-one (x/splitmix64 (rand-long))
-       gen-one' (-> gen-one x/next x/next x/next)
-       a (first (x/seed gen-one'))
-       gen-two (x/splitmix64 a)]
-  (is
-   (.equals
-    (-> gen-two x/next x/value)
-    (-> gen-one' x/next x/value)))
-  (is
-   (.equals
-    (-> gen-two x/next x/next x/value)
-    (-> gen-one' x/next x/next x/value)))))
 
 (deftest ??splitmix64
   []

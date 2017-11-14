@@ -1,12 +1,9 @@
 (ns xoroshiro128.core-test
  (:require
+  xoroshiro128.test.util
   [clojure.test :refer [deftest is]]
   [criterium.core]
   [xoroshiro128.core :as x]))
-
-(defn rand-long
-  []
-  (.nextLong (java.util.Random.)))
 
 ; (deftest benchmark
 ;   (criterium.core/bench (rand-long))
@@ -15,19 +12,19 @@
 (deftest ??xoroshiro128+--args
  ; Check the signature of xoroshiro128+ all works as expected.
  ; 1x 64 bit.
- (let [seed64 (rand-long)
+ (let [seed64 (xoroshiro128.test.util/rand-long)
        x (x/xoroshiro128+ seed64)
        seed128 (x/seed64->seed128 seed64)]
   (is (= seed128 (x/seed x))))
 
  ; 2x 64 bit
- (let [a (rand-long)
-       b (rand-long)
+ (let [a (xoroshiro128.test.util/rand-long)
+       b (xoroshiro128.test.util/rand-long)
        x (x/xoroshiro128+ a b)]
   (is (= [a b] (x/seed x))))
 
  ; 1x 128 bit vector
- (let [seed128 [(rand-long) (rand-long)]
+ (let [seed128 [(xoroshiro128.test.util/rand-long) (xoroshiro128.test.util/rand-long)]
        x (x/xoroshiro128+ seed128)]
   (is (= seed128 (x/seed x))))
 
@@ -38,7 +35,7 @@
   (is (= seed128 (x/seed x)))))
 
 (deftest x-rand
-  (let [seed (rand-long)
+  (let [seed (xoroshiro128.test.util/rand-long)
         x   (x/xoroshiro128+ seed)
         j   (x/jump x)
         j'  (x/jump j)]
@@ -138,21 +135,11 @@
   ; We should be able to take a seed from any point in a sequence and seed a new
   ; identical sequence that starts from the first point.
   ; Xoroshiro128+
-  (let [gen-one (x/xoroshiro128+ (rand-long))
+  (let [gen-one (x/xoroshiro128+ (xoroshiro128.test.util/rand-long))
         gen-one' (-> gen-one x/next x/next x/next)
         a (first (x/seed gen-one'))
         b (second (x/seed gen-one'))
         gen-two (x/xoroshiro128+ a b)]
-    (is (=  (-> gen-two x/next x/value)
-            (-> gen-one' x/next x/value)))
-    (is (=  (-> gen-two x/next x/next x/value)
-            (-> gen-one' x/next x/next x/value))))
-
-  ; Splitmix64
-  (let [gen-one (x/splitmix64 (rand-long))
-        gen-one' (-> gen-one x/next x/next x/next)
-        a (first (x/seed gen-one'))
-        gen-two (x/splitmix64 a)]
     (is (=  (-> gen-two x/next x/value)
             (-> gen-one' x/next x/value)))
     (is (=  (-> gen-two x/next x/next x/value)
