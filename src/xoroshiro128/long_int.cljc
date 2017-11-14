@@ -37,7 +37,9 @@
 (defn native-rand
  []
  #?(:cljs
-    (* (long "9223372036854775807") (long (Math/random)))
+    (*
+     (long "9223372036854775807")
+     (long (Math/random)))
     :clj
     (.nextLong (java.util.Random.))))
 
