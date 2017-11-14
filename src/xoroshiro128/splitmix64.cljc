@@ -4,6 +4,9 @@
   xoroshiro128.long-int
   xoroshiro128.constants))
 
+#?(:clj (set! *warn-on-reflection* true))
+#?(:clj (set! *unchecked-math* :warn-on-boxed))
+
 ; Splitmix64
 ; Reference C implementation at http://xoroshiro.di.unimi.it/splitmix64.c)
 
