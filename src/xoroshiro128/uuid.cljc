@@ -1,5 +1,14 @@
 (ns xoroshiro128.uuid
+ #?(:cljs (:refer-clojure :exclude [random-uuid]))
  #?(:cljs (:require goog.math.Long)))
+
+; from https://github.com/weavejester/medley
+(defn random-uuid
+ "Generates a new random UUID. Same as `cljs.core/random-uuid` except it works
+ for Clojure as well as ClojureScript."
+ []
+ #?(:clj (java.util.UUID/randomUUID)
+    :cljs (cljs.core/random-uuid)))
 
 (defn as-longs
  [u]
@@ -10,7 +19,7 @@
      (clojure.string/replace u "-" "")
      (partition 16 u)
      (map (partial apply str) u)
-     (map 
+     (map
       #(goog.math.Long.fromString % 16)
       u))))
 
