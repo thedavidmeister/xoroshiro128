@@ -1,5 +1,7 @@
 (ns xoroshiro128.core
- (:refer-clojure :exclude [next rand uuid?]))
+ (:refer-clojure :exclude [next rand uuid?])
+ (:require
+  [xoroshiro128.long-int :as l]))
 
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* :warn-on-boxed)
@@ -20,19 +22,19 @@
     [_]
     (as-> a a
       ; 0x9E3779B97F4A7C15 = -7046029254386353131
-      (+ a -7046029254386353131)
+      (l/add a -7046029254386353131)
 
       ; 0xBF58476D1CE4E5B9 = -4658895280553007687)
-      (*
-       (bit-xor a (unsigned-bit-shift-right a 30))
+      (l/multiply
+       (l/xor a (l/unsigned-bit-shift-right a 30))
        -4658895280553007687)
 
       ; 0x94D049BB133111EB = -7723592293110705685
-      (*
-       (bit-xor a (unsigned-bit-shift-right a 27))
+      (l/multiply
+       (l/xor a (l/unsigned-bit-shift-right a 27))
        -7723592293110705685)
 
-      (bit-xor a (unsigned-bit-shift-right a 31))))
+      (l/xor a (l/unsigned-bit-shift-right a 31))))
 
   (next
     [_]

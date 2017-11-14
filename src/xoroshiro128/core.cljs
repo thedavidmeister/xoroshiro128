@@ -33,17 +33,17 @@
     [_]
     (as-> a a
 
-      (.add a L-0x9E3779B97F4A7C15)
+      (l/add a L-0x9E3779B97F4A7C15)
 
-      (.multiply
-       (.xor a (.shiftRightUnsigned a 30))
+      (l/multiply
+       (l/xor a (l/unsigned-bit-shift-right a 30))
        L-0xBF58476D1CE4E5B9)
 
       (.multiply
-       (.xor a (.shiftRightUnsigned a 27))
+       (l/xor a (l/unsigned-bit-shift-right a 27))
        L-0x94D049BB133111EB)
 
-      (.xor a (.shiftRightUnsigned a 31))))
+      (l/xor a (l/unsigned-bit-shift-right a 31))))
 
   (next
     [_]
