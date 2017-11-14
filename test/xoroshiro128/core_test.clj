@@ -1,6 +1,6 @@
 (ns xoroshiro128.core-test
  (:require
-  xoroshiro128.test.util
+  xoroshiro128.long-int
   [clojure.test :refer [deftest is]]
   [criterium.core]
   [xoroshiro128.core :as x]))
@@ -12,19 +12,20 @@
 (deftest ??xoroshiro128+--args
  ; Check the signature of xoroshiro128+ all works as expected.
  ; 1x 64 bit.
- (let [seed64 (xoroshiro128.test.util/rand-long)
+ (let [seed64 (xoroshiro128.long-int/native-rand)
        x (x/xoroshiro128+ seed64)
        seed128 (x/seed64->seed128 seed64)]
   (is (= seed128 (x/seed x))))
 
  ; 2x 64 bit
- (let [a (xoroshiro128.test.util/rand-long)
-       b (xoroshiro128.test.util/rand-long)
+ (let [a (xoroshiro128.long-int/native-rand)
+       b (xoroshiro128.long-int/native-rand)
        x (x/xoroshiro128+ a b)]
   (is (= [a b] (x/seed x))))
 
  ; 1x 128 bit vector
- (let [seed128 [(xoroshiro128.test.util/rand-long) (xoroshiro128.test.util/rand-long)]
+ (let [seed128 [(xoroshiro128.long-int/native-rand)
+                (xoroshiro128.long-int/native-rand)]
        x (x/xoroshiro128+ seed128)]
   (is (= seed128 (x/seed x))))
 
@@ -35,10 +36,10 @@
   (is (= seed128 (x/seed x)))))
 
 (deftest x-rand
-  (let [seed (xoroshiro128.test.util/rand-long)
-        x   (x/xoroshiro128+ seed)
-        j   (x/jump x)
-        j'  (x/jump j)]
+  (let [seed (xoroshiro128.long-int/native-rand)
+        x (x/xoroshiro128+ seed)
+        j (x/jump x)
+        j' (x/jump j)]
     ; Check that we can seed rand properly.
     (x/seed-rand! seed)
     (is (= (x/rand) (x/value x)))
@@ -135,7 +136,7 @@
   ; We should be able to take a seed from any point in a sequence and seed a new
   ; identical sequence that starts from the first point.
   ; Xoroshiro128+
-  (let [gen-one (x/xoroshiro128+ (xoroshiro128.test.util/rand-long))
+  (let [gen-one (x/xoroshiro128+ (xoroshiro128.long-int/native-rand))
         gen-one' (-> gen-one x/next x/next x/next)
         a (first (x/seed gen-one'))
         b (second (x/seed gen-one'))

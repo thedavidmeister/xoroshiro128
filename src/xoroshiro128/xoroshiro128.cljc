@@ -20,11 +20,13 @@
 
   (next
     [_]
-    (let [x   (bit-xor a b)
-          a'  (bit-xor  (Long/rotateLeft a 55)
-                        x
-                        (bit-shift-left x 14))
-          b'  (Long/rotateLeft x 36)]
+    (let [x (xoroshiro128.long-int/bit-xor a b)
+          a' (xoroshiro128.long-int/bit-xor
+              (xoroshiro128.long-int/bit-rotate-left a 55)
+              (xoroshiro128.long-int/bit-xor
+               x
+               (xoroshiro128.long-int/bit-shift-left x 14)))
+          b' (xoroshiro128.long-int/bit-rotate-left x 36)]
       (Xoroshiro128+. a' b')))
 
   (seed
@@ -35,11 +37,11 @@
     [this]
     ; 0xbeac0467eba5facb = -4707382666127344949
     ; 0xd86b048b86aa9922 = -2852180941702784734
-    (let [s   (atom '(0 0))
-          x   (atom this)]
+    (let [s (atom '(0 0))
+          x (atom this)]
       (doseq [^long i [-4707382666127344949 -2852180941702784734]
               ^long b (range 64)]
-        (when-not (= 0 (bit-and i (bit-shift-left 1 b)))
+        (when-not (= 0 (xoroshiro128.long-int/bit-and i (xoroshiro128.long-int/bit-shift-left 1 b)))
                   (swap! s #(map bit-xor % (xoroshiro128.prng/seed @x))))
         (swap! x xoroshiro128.prng/next))
       (apply xoroshiro128+ @s))))
@@ -55,8 +57,11 @@
 (defn uuid->seed128
  "Converts a uuid to a 128 bit seed"
  [^java.util.UUID u]
- [(.getMostSignificantBits u)
-  (.getLeastSignificantBits u)])
+ #?(:clj
+    [(.getMostSignificantBits u)
+     (.getLeastSignificantBits u)]
+    :cljs
+    [u u]))
 
 (defn xoroshiro128+
  ([x]
