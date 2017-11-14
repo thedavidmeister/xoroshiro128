@@ -39,7 +39,7 @@
        (l/xor a (l/unsigned-bit-shift-right a 30))
        L-0xBF58476D1CE4E5B9)
 
-      (.multiply
+      (l/multiply
        (l/xor a (l/unsigned-bit-shift-right a 27))
        L-0x94D049BB133111EB)
 
@@ -68,10 +68,10 @@
 
   (next
    [_]
-   (let [x (.xor a b)
-         a' (.xor
+   (let [x (l/xor a b)
+         a' (l/xor
              (l/rotate-left a 55)
-             (.xor x
+             (l/xor x
               (.shiftLeft x 14)))
          b' (l/rotate-left x 36)]
      (Xoroshiro128+. a' b')))
