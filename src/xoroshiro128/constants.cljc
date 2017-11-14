@@ -2,6 +2,9 @@
  (:require
   xoroshiro128.long-int))
 
+#?(:clj (set! *warn-on-reflection* true))
+#?(:clj (set! *unchecked-math* :warn-on-boxed))
+
 ; 0x9E3779B97F4A7C15 = -7046029254386353131
 (def L-0x9E3779B97F4A7C15
  #?(:cljs (xoroshiro128.long-int/long "-7046029254386353131")

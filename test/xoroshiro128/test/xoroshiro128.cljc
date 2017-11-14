@@ -5,10 +5,6 @@
   xoroshiro128.test.util
   xoroshiro128.long-int))
 
-; (deftest benchmark
-;   (criterium.core/bench (rand-long))
-;   (criterium.core/bench (x/rand)))
-
 (deftest ??seed-extraction
  ; We should be able to take a seed from any point in a sequence and seed a new
  ; identical sequence that starts from the first point.

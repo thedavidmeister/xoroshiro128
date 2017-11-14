@@ -2,6 +2,9 @@
  #?(:cljs (:refer-clojure :exclude [random-uuid]))
  #?(:cljs (:require goog.math.Long)))
 
+#?(:clj (set! *warn-on-reflection* true))
+#?(:clj (set! *unchecked-math* :warn-on-boxed))
+
 ; from https://github.com/weavejester/medley
 (defn random-uuid
  "Generates a new random UUID. Same as `cljs.core/random-uuid` except it works

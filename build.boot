@@ -8,6 +8,7 @@
    [org.clojure/clojurescript "1.9.946"]
    [org.clojure/tools.namespace "0.2.11"]
 
+   [samestep/boot-refresh "0.1.0" :scope "test"]
    [adzerk/boot-cljs "2.1.2" :scope "test"]
    [doo "0.1.7" :scope "test"]
    [criterium "0.4.4" :scope "test"]
@@ -25,7 +26,8 @@
 (require
  '[adzerk.bootlaces :refer :all]
  '[adzerk.boot-test :refer [test]]
- '[crisptrutski.boot-cljs-test :refer [test-cljs]])
+ '[crisptrutski.boot-cljs-test :refer [test-cljs]]
+ '[samestep.boot-refresh :refer [refresh]])
 
 (bootlaces! version)
 
@@ -43,6 +45,18 @@
   (test-cljs
    :cljs-opts {:process-shim false}
    :namespaces [#".*test.*"])))
+
+(deftask repl-server
+ []
+ (set-env! :source-paths #{"src" "test"})
+ (comp
+  (watch)
+  (refresh)
+  (repl :server true)))
+
+(deftask repl-client
+ []
+ (repl :client true))
 
 (deftask deploy
  []

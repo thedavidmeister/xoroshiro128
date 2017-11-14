@@ -5,6 +5,9 @@
   xoroshiro128.long-int
   xoroshiro128.xoroshiro128))
 
+#?(:clj (set! *warn-on-reflection* true))
+#?(:clj (set! *unchecked-math* :warn-on-boxed))
+
 ; Simple PRNG
 ; Can be re-seeded ad-hoc using seed-rand!
 ; Relies on mutable state.
