@@ -24,14 +24,6 @@
   #?(:cljs (goog.math.Long.fromNumber a)
      :clj (cast Long a))))
 
-(defn native-rand
- []
- #?(:cljs
-    (long
-     (clojure.core/* 9223372036854775807 (Math/random)))
-    :clj
-    (.nextLong (java.util.Random.))))
-
 (defn +
  [^long a ^long b]
  #?(:cljs (.add a b)
@@ -41,6 +33,13 @@
  [^long a ^long b]
  #?(:cljs (.multiply a b)
     :clj (clojure.core/* a b)))
+
+(defn native-rand
+ []
+ #?(:cljs
+    (* (long "9223372036854775807") (long (Math/random)))
+    :clj
+    (.nextLong (java.util.Random.))))
 
 (defn bit-xor
  [^long a ^long b]
