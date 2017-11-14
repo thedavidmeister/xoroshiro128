@@ -16,3 +16,13 @@
 (def L-0x94D049BB133111EB
  #?(:cljs (xoroshiro128.long-int/long "-7723592293110705685")
     :clj -7723592293110705685))
+
+; 0xbeac0467eba5facb = -4707382666127344949
+(def L-0xbeac0467eba5facb
+ #?(:cljs (xoroshiro128.long-int/long "-4707382666127344949")
+    :clj -4707382666127344949))
+
+; 0xd86b048b86aa9922 = -2852180941702784734
+(def L-0xd86b048b86aa9922
+ #?(:cljs (xoroshiro128.long-int/long "-2852180941702784734")
+    :clj -2852180941702784734))
