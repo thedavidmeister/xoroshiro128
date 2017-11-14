@@ -1,18 +1,12 @@
-(ns xoroshiro128.seed-test
+(ns xoroshiro128.test.seed
  (:refer-clojure :exclude [random-uuid])
  (:require
-  [xoroshiro128.core :as x]
+  xoroshiro128.core
+  xoroshiro128.test.util
   [clojure.test :refer [deftest is]]))
 
-; from https://github.com/weavejester/medley
-(defn random-uuid
- []
- #?(:clj (java.util.UUID/randomUUID)
-    :cljs (cljs.core/random-uuid)))
-
 (deftest ??uuid->seed128
- (let [u (random-uuid)
-       uuids [#uuid "32be7cb8-cef3-4f1f-bfd7-67993641cb9e"
+ (let [uuids [#uuid "32be7cb8-cef3-4f1f-bfd7-67993641cb9e"
               #uuid "89e24685-47cb-4cc3-8c94-112873807db5"
               #uuid "9eac068c-bcfc-463f-b434-e95235cad3b3"
               #uuid "00bcd8e0-397a-44b3-9d81-1f0fd9cb27d5"
@@ -32,4 +26,11 @@
                        ["-1731121378043411275" "-7567807506589140582"]
                        ["-3815963697451545653" "-4621312184639743576"]
                        ["6978579930074531561" "-5416869778738886418"]]]
-  (prn (map x/uuid->seed128 uuids))))
+  (doall
+   (map
+    (fn [u es]
+     (xoroshiro128.test.util/longs-equal?
+      es
+      (xoroshiro128.core/uuid->seed128 u)))
+    uuids
+    expected-seeds))))

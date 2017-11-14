@@ -1,5 +1,5 @@
 (ns xoroshiro128.long-int
- (:refer-clojure :exclude [long unsigned-bit-shift-right bit-shift-left bit-and bit-xor * +])
+ (:refer-clojure :exclude [long unsigned-bit-shift-right bit-shift-left bit-and bit-xor * + =])
  #?(:cljs (:require goog.math.Long)))
 
 #?(:clj (set! *warn-on-reflection* true))
@@ -33,6 +33,11 @@
  [^long a ^long b]
  #?(:cljs (.multiply a b)
     :clj (clojure.core/* a b)))
+
+(defn =
+ [^long a ^long b]
+ #?(:cljs (.equals a b)
+    :clj (clojure.core/= a b)))
 
 (defn native-rand
  []

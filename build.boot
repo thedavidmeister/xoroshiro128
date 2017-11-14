@@ -6,6 +6,7 @@
  :dependencies
  '[[org.clojure/clojure "1.9.0-RC1"]
    [org.clojure/clojurescript "1.9.946"]
+   [org.clojure/tools.namespace "0.2.11"]
 
    [adzerk/boot-cljs "2.1.2" :scope "test"]
    [doo "0.1.7" :scope "test"]
@@ -40,7 +41,8 @@
  (set-env! :source-paths #{"src" "test"})
  (comp
   (test-cljs
-   :cljs-opts {:process-shim false})))
+   :cljs-opts {:process-shim false}
+   :namespaces [#".*test.*"])))
 
 (deftask deploy
  []

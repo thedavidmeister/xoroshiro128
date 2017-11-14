@@ -2,6 +2,7 @@
  (:require
   xoroshiro128.splitmix64
   xoroshiro128.prng
+  xoroshiro128.uuid
   xoroshiro128.long-int))
 
 #?(:clj (set! *warn-on-reflection* true))
@@ -55,11 +56,8 @@
 (defn uuid->seed128
  "Converts a uuid to a 128 bit seed"
  [^java.util.UUID u]
- #?(:clj
-    [(.getMostSignificantBits u)
-     (.getLeastSignificantBits u)]
-    :cljs
-    [u u]))
+ [(xoroshiro128.uuid/most-significant-bits u)
+  (xoroshiro128.uuid/least-significant-bits u)])
 
 (defn xoroshiro128+
  ([x]
