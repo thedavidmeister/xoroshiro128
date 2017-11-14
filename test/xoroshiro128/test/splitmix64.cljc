@@ -6,6 +6,8 @@
   [clojure.test :refer [deftest is]]))
 
 (deftest ??seed-extraction
+ ; We should be able to take a seed from any point in a sequence and seed a new
+ ; identical sequence that starts from the first point.
  ; Splitmix64
  (let [gen-one (x/splitmix64 (xoroshiro128.long-int/native-rand))
        gen-one' (-> gen-one x/next x/next x/next)

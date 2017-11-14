@@ -35,11 +35,11 @@
       (xoroshiro128.long-int/unsigned-bit-shift-right a 31))))
 
  (next
-   [_]
-   (Splitmix64.
-    (xoroshiro128.long-int/+
-     a
-     xoroshiro128.constants/L-0x9E3779B97F4A7C15)))
+  [_]
+  (Splitmix64.
+   (xoroshiro128.long-int/+
+    a
+    xoroshiro128.constants/L-0x9E3779B97F4A7C15)))
 
  (seed [_] [a]))
 

@@ -16,7 +16,8 @@
 (def seed xoroshiro128.prng/seed)
 (def jump xoroshiro128.prng/jump)
 
-(def seed64->seed128 xoroshiro128.xoroshiro128/seed64->seed128)
+(def long->seed128 xoroshiro128.xoroshiro128/long->seed128)
+(def ^:deprecated seed64->seed128 long->seed128)
 (def uuid->seed128 xoroshiro128.xoroshiro128/uuid->seed128)
 
 (def splitmix64 xoroshiro128.splitmix64/splitmix64)

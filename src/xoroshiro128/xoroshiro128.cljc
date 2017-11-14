@@ -45,9 +45,10 @@
         (swap! x xoroshiro128.prng/next))
       (apply xoroshiro128+ @s))))
 
-(defn seed64->seed128
+(defn long->seed128
  "Uses splitmix to generate a 128 bit seed from a 64 bit seed"
  [^long x]
+ {:pre [(xoroshiro128.long-int/long? x)]}
  (let [splitmix (xoroshiro128.splitmix64/splitmix64 x)
        a (-> splitmix xoroshiro128.prng/next xoroshiro128.prng/value)
        b (-> splitmix xoroshiro128.prng/next xoroshiro128.prng/next xoroshiro128.prng/value)]
@@ -56,14 +57,18 @@
 (defn uuid->seed128
  "Converts a uuid to a 128 bit seed"
  [^java.util.UUID u]
+ {:pre [(uuid? u)]}
  [(xoroshiro128.uuid/most-significant-bits u)
   (xoroshiro128.uuid/least-significant-bits u)])
 
 (defn xoroshiro128+
  ([x]
   (cond
+   (xoroshiro128.long-int/long? x)
+   (xoroshiro128+ (long->seed128 x))
+
    (number? x)
-   (xoroshiro128+ (seed64->seed128 x))
+   (xoroshiro128+ (long->seed128 (xoroshiro128.long-int/long x)))
 
    (sequential? x)
    (apply xoroshiro128+ x)
