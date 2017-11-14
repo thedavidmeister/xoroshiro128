@@ -5,24 +5,24 @@
 #?(:clj (set! *warn-on-reflection* true))
 #?(:clj (set! *unchecked-math* :warn-on-boxed))
 
-(defn long? [^long a]
+(defn long? [a]
  #?(:cljs (instance? goog.math.Long a)
     :clj (instance? java.lang.Long a)))
 
 (defn long
- [^long a]
+ [a]
  {:post [(long? %)]}
- #?(:cljs
-    (cond
-     (long? a)
-     a
+ (cond
+  (long? a)
+  a
 
-     (string? a)
-     (goog.math.Long.fromString a 10)
+  (string? a)
+  #?(:cljs (goog.math.Long.fromString a 10)
+     :clj (Long/parseLong a))
 
-     (number? a)
-     (goog.math.Long.fromNumber a))
-    :clj a))
+  (number? a)
+  #?(:cljs (goog.math.Long.fromNumber a)
+     :clj (cast Long a))))
 
 (defn add
  [^long a ^long b]
