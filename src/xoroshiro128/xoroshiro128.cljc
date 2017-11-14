@@ -36,12 +36,19 @@
 
   (jump
    [this]
-   (let [s (atom '(0 0))
+   (let [s (atom [(xoroshiro128.long-int/long 0)
+                  (xoroshiro128.long-int/long 0)])
          x (atom this)]
     (doseq [^long i [xoroshiro128.constants/L-0xbeac0467eba5facb xoroshiro128.constants/L-0xd86b048b86aa9922]
             ^long b (range 64)]
      (when-not
-      (= 0 (xoroshiro128.long-int/bit-and i (xoroshiro128.long-int/bit-shift-left 1 b)))
+      (xoroshiro128.long-int/=
+       (xoroshiro128.long-int/long 0)
+       (xoroshiro128.long-int/bit-and
+        i
+        (xoroshiro128.long-int/bit-shift-left
+         (xoroshiro128.long-int/long 1)
+         b)))
       (swap! s #(map xoroshiro128.long-int/bit-xor % (xoroshiro128.prng/seed @x))))
      (swap! x xoroshiro128.prng/next))
     (apply xoroshiro128+ @s))))
