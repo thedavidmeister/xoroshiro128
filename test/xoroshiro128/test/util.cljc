@@ -10,3 +10,10 @@
    #(is (xoroshiro128.long-int/= %1 %2))
    (map xoroshiro128.long-int/long s-1)
    (map xoroshiro128.long-int/long s-2))))
+
+(defn is-long?
+ [expected test-output]
+ (is
+  (xoroshiro128.long-int/=
+   (xoroshiro128.long-int/long expected)
+   test-output)))
