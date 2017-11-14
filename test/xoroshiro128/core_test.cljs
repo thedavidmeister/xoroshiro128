@@ -1,5 +1,6 @@
 (ns xoroshiro128.core-test
  (:require
+  xoroshiro128.constants
   [cljs.test :refer-macros [deftest is]]
   [xoroshiro128.long-int :as l]
   [xoroshiro128.core :as x]))
@@ -165,7 +166,7 @@
 
 (deftest ??splitmix64
   []
-  (let [next-seed #(.add (l/long %) x/L-0x9E3779B97F4A7C15)
+  (let [next-seed #(.add (l/long %) xoroshiro128.constants/L-0x9E3779B97F4A7C15)
         iterator #(map x/value (iterate x/next (x/splitmix64 (l/long %))))
         longs-equal? (fn [s-1 s-2]
                       (doall

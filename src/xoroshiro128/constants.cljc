@@ -1,0 +1,18 @@
+(ns xoroshiro128.constants
+ (:require
+  xoroshiro128.long-int))
+
+; 0x9E3779B97F4A7C15 = -7046029254386353131
+(def L-0x9E3779B97F4A7C15
+ #?(:cljs (xoroshiro128.long-int/long "-7046029254386353131")
+    :clj -7046029254386353131))
+
+; 0xBF58476D1CE4E5B9 = -4658895280553007687
+(def L-0xBF58476D1CE4E5B9
+ #?(:cljs (xoroshiro128.long-int/long "-4658895280553007687")
+    :clj -4658895280553007687))
+
+; 0x94D049BB133111EB = -7723592293110705685
+(def L-0x94D049BB133111EB
+ #?(:cljs (xoroshiro128.long-int/long "-7723592293110705685")
+    :clj -7723592293110705685))

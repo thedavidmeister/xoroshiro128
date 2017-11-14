@@ -1,6 +1,7 @@
 (ns xoroshiro128.core
  (:refer-clojure :exclude [next rand uuid?])
  (:require
+  xoroshiro128.constants
   xoroshiro128.prng
   [xoroshiro128.long-int :as l]))
 

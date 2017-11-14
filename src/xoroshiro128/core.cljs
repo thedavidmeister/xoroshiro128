@@ -1,6 +1,7 @@
 (ns xoroshiro128.core
  (:require
   xoroshiro128.prng
+  xoroshiro128.constants
   [xoroshiro128.long-int :as l])
  (:refer-clojure :exclude [next rand]))
 
@@ -12,39 +13,27 @@
 ; Splitmix64
 ; Reference C implementation at http://xoroshiro.di.unimi.it/splitmix64.c)
 
-; 0x9E3779B97F4A7C15 = -7046029254386353131
-(def L-0x9E3779B97F4A7C15
- (l/long "-7046029254386353131"))
-
-; 0xBF58476D1CE4E5B9 = -4658895280553007687
-(def L-0xBF58476D1CE4E5B9
- (l/long "-4658895280553007687"))
-
-; 0x94D049BB133111EB = -7723592293110705685
-(def L-0x94D049BB133111EB
- (l/long "-7723592293110705685"))
-
 (deftype Splitmix64 [a]
   xoroshiro128.prng/IPRNG
   (value
     [_]
     (as-> a a
 
-      (l/add a L-0x9E3779B97F4A7C15)
+      (l/add a xoroshiro128.constants/L-0x9E3779B97F4A7C15)
 
       (l/multiply
        (l/xor a (l/unsigned-bit-shift-right a 30))
-       L-0xBF58476D1CE4E5B9)
+       xoroshiro128.constants/L-0xBF58476D1CE4E5B9)
 
       (l/multiply
        (l/xor a (l/unsigned-bit-shift-right a 27))
-       L-0x94D049BB133111EB)
+       xoroshiro128.constants/L-0x94D049BB133111EB)
 
       (l/xor a (l/unsigned-bit-shift-right a 31))))
 
   (next
     [_]
-    (Splitmix64. (.add a L-0x9E3779B97F4A7C15)))
+    (Splitmix64. (.add a xoroshiro128.constants/L-0x9E3779B97F4A7C15)))
 
   (seed [_] [a]))
 
