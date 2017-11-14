@@ -68,11 +68,20 @@
    (xoroshiro128+ (long->seed128 x))
 
    (number? x)
-   (xoroshiro128+ (long->seed128 (xoroshiro128.long-int/long x)))
+   (xoroshiro128+ (xoroshiro128.long-int/long x))
 
    (sequential? x)
    (apply xoroshiro128+ x)
 
    (uuid? x)
-   (xoroshiro128+ (uuid->seed128 x))))
- ([^long a ^long b] (Xoroshiro128+. a b)))
+   (xoroshiro128+ (uuid->seed128 x))
+
+   :else
+   (let [message (str "Could not build PRNG from seed: " (pr-str x))
+         e #?(:clj (Exception. message)
+              :cljs (js/Error. message))]
+    (throw e))))
+ ([a b]
+  (Xoroshiro128+.
+   (xoroshiro128.long-int/long a)
+   (xoroshiro128.long-int/long b))))

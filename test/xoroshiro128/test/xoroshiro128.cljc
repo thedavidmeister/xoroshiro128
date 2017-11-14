@@ -9,11 +9,15 @@
  ; identical sequence that starts from the first point.
  ; Xoroshiro128+
  (let [gen-one (x/xoroshiro128+ (xoroshiro128.long-int/native-rand))
-       gen-one' (-> gen-one x/next x/next x/next)]))
-   ;     a (first (x/seed gen-one'))
-   ;     b (second (x/seed gen-one'))
-   ;     gen-two (x/xoroshiro128+ a b)]
-   ; (is (=  (-> gen-two x/next x/value)
-   ;         (-> gen-one' x/next x/value)))
-   ; (is (=  (-> gen-two x/next x/next x/value)
-   ;         (-> gen-one' x/next x/next x/value)))))
+       gen-one' (-> gen-one x/next x/next x/next)
+       a (first (x/seed gen-one'))
+       b (second (x/seed gen-one'))
+       gen-two (x/xoroshiro128+ a b)]
+  (is
+   (xoroshiro128.long-int/=
+    (-> gen-two x/next x/value)
+    (-> gen-one' x/next x/value)))
+  (is
+   (xoroshiro128.long-int/=
+    (-> gen-two x/next x/next x/value)
+    (-> gen-one' x/next x/next x/value)))))
