@@ -16,34 +16,35 @@
 (deftype Xoroshiro128+ [^long a ^long b]
   xoroshiro128.prng/IPRNG
   (value
-    [_]
-    (xoroshiro128.long-int/+ a b))
+   [_]
+   (xoroshiro128.long-int/+ a b))
 
   (next
-    [_]
-    (let [x (xoroshiro128.long-int/bit-xor a b)
-          a' (xoroshiro128.long-int/bit-xor
-              (xoroshiro128.long-int/bit-rotate-left a 55)
-              (xoroshiro128.long-int/bit-xor
-               x
-               (xoroshiro128.long-int/bit-shift-left x 14)))
-          b' (xoroshiro128.long-int/bit-rotate-left x 36)]
-      (Xoroshiro128+. a' b')))
+   [_]
+   (let [x (xoroshiro128.long-int/bit-xor a b)
+         a' (xoroshiro128.long-int/bit-xor
+             (xoroshiro128.long-int/bit-rotate-left a 55)
+             (xoroshiro128.long-int/bit-xor
+              x
+              (xoroshiro128.long-int/bit-shift-left x 14)))
+         b' (xoroshiro128.long-int/bit-rotate-left x 36)]
+    (Xoroshiro128+. a' b')))
 
   (seed
-    [_]
-    [a b])
+   [_]
+   [a b])
 
   (jump
-    [this]
-    (let [s (atom '(0 0))
-          x (atom this)]
-      (doseq [^long i [xoroshiro128.constants/L-0xbeac0467eba5facb xoroshiro128.constants/L-0xd86b048b86aa9922]
-              ^long b (range 64)]
-        (when-not (= 0 (xoroshiro128.long-int/bit-and i (xoroshiro128.long-int/bit-shift-left 1 b)))
-                  (swap! s #(map xoroshiro128.long-int/bit-xor % (xoroshiro128.prng/seed @x))))
-        (swap! x xoroshiro128.prng/next))
-      (apply xoroshiro128+ @s))))
+   [this]
+   (let [s (atom '(0 0))
+         x (atom this)]
+    (doseq [^long i [xoroshiro128.constants/L-0xbeac0467eba5facb xoroshiro128.constants/L-0xd86b048b86aa9922]
+            ^long b (range 64)]
+     (when-not
+      (= 0 (xoroshiro128.long-int/bit-and i (xoroshiro128.long-int/bit-shift-left 1 b)))
+      (swap! s #(map xoroshiro128.long-int/bit-xor % (xoroshiro128.prng/seed @x))))
+     (swap! x xoroshiro128.prng/next))
+    (apply xoroshiro128+ @s))))
 
 (defn long->seed128
  "Uses splitmix to generate a 128 bit seed from a 64 bit seed"
