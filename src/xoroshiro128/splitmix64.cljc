@@ -16,15 +16,15 @@
    [_]
    (as-> a a
 
-     (xoroshiro128.long-int/add a xoroshiro128.constants/L-0x9E3779B97F4A7C15)
+     (xoroshiro128.long-int/+ a xoroshiro128.constants/L-0x9E3779B97F4A7C15)
 
-     (xoroshiro128.long-int/multiply
+     (xoroshiro128.long-int/*
       (xoroshiro128.long-int/bit-xor
        a
        (xoroshiro128.long-int/unsigned-bit-shift-right a 30))
       xoroshiro128.constants/L-0xBF58476D1CE4E5B9)
 
-     (xoroshiro128.long-int/multiply
+     (xoroshiro128.long-int/*
       (xoroshiro128.long-int/bit-xor
        a
        (xoroshiro128.long-int/unsigned-bit-shift-right a 27))
@@ -37,7 +37,7 @@
  (next
    [_]
    (Splitmix64.
-    (xoroshiro128.long-int/add
+    (xoroshiro128.long-int/+
      a
      xoroshiro128.constants/L-0x9E3779B97F4A7C15)))
 

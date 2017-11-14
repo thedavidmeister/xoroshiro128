@@ -16,7 +16,7 @@
   xoroshiro128.prng/IPRNG
   (value
     [_]
-    (xoroshiro128.long-int/add a b))
+    (xoroshiro128.long-int/+ a b))
 
   (next
     [_]

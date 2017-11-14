@@ -1,5 +1,5 @@
 (ns xoroshiro128.long-int
- (:refer-clojure :exclude [long unsigned-bit-shift-right bit-shift-left bit-and bit-xor])
+ (:refer-clojure :exclude [long unsigned-bit-shift-right bit-shift-left bit-and bit-xor * +])
  #?(:cljs (:require goog.math.Long)))
 
 #?(:clj (set! *warn-on-reflection* true))
@@ -28,19 +28,19 @@
  []
  #?(:cljs
     (long
-     (* 9223372036854775807 (Math/random)))
+     (clojure.core/* 9223372036854775807 (Math/random)))
     :clj
     (.nextLong (java.util.Random.))))
 
-(defn add
+(defn +
  [^long a ^long b]
  #?(:cljs (.add a b)
-    :clj (+ a b)))
+    :clj (clojure.core/+ a b)))
 
-(defn multiply
+(defn *
  [^long a ^long b]
  #?(:cljs (.multiply a b)
-    :clj (* a b)))
+    :clj (clojure.core/* a b)))
 
 (defn bit-xor
  [^long a ^long b]
