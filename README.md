@@ -176,16 +176,16 @@ Results:
 
 ```
 "benchmarking xoroshiro128.state/rand"
-321.11976099999987
+251.7517679999999
 "benchmarking xoroshiro128.long-int/native-rand"
-32670.762584000004
+13292.690328
 "benchmarking Math.random"
-8.543898000003537
+47.84667500000069
 ```
 
 These numbers seem to wobble by around +/- 20% on subsequent runs.
 
-We can see that xoroshiro128+ is ~40x slower than `Math.random` but it's a bit "apples vs. oranges" as `Math.random` produces floats between [0, 1] and xoroshiro128+ produces `goog.math.Long` objects across the full 64 bit integer range.
+We can see that xoroshiro128+ is ~5x slower than `Math.random` but it's a bit "apples vs. oranges" as `Math.random` produces floats between [0, 1] and xoroshiro128+ produces `goog.math.Long` objects across the full 64 bit integer range.
 
 To get "apples to apples" timings (and to seed `rand`) I created a "native random long" function that works exactly like the internals of `random-uuid`, but stops halfway to return a single `goog.math.Long` instead of a full UUID:
 
@@ -197,9 +197,9 @@ To get "apples to apples" timings (and to seed `rand`) I created a "native rando
   16))
 ```
 
-This approach is ~100x slower than xoroshiro128+.
+This approach is ~50x slower than xoroshiro128+ and ~260x slower than `Math.random` (due to the string manipulation, I assume).
 
-Overall the suitability in CLJS is not as clear cut as CLJ due to lack of native long support.
+Overall the use-cases in CLJS are not as clear cut as CLJ due to lack of native long support.
 
 I recommend xoroshiro128+ when:
 
@@ -212,16 +212,18 @@ I recommend `Math.random` when working with an _unseeded_ PRNG outputting only [
 
 I recommend `xoroshiro128.long-int/native-rand` when generating new seeds for xoroshiro128+ if UUID seeds are not suitable.
 
-### Assertions
+### Assertions & optimizations
 
-Newer versions of this library have added some assertions to help make seeding the PRNG correctly easier. The asserts add some small overhead, bringing the performance closer to the native Java PRNG for longs.
+Newer versions of this library have added some assertions to help make seeding the PRNG correctly easier. The assertions add ~10-15% overhead so disable them if this matters.
 
 The benchmarking above was conducted with assertions disabled.
 
 To disable assertions:
 
-- in clojure simply run at any point `(set! *assert* false)`
+- in clojure simply run `(set! *assert* false)` at any point
 - in clojurescript set the relevant compiler option `{:elide-asserts true}`
+
+CLJS benchmarks were conducted with advanced compiler optimizations enabled as this should best represent usage in production deployments. Interestingly, advanced compilation made `Math.random` calls about 6x _slower_, and `goog.math.Long` based logic ~30-60% faster.
 
 ## Cryptography
 

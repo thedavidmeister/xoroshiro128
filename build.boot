@@ -43,7 +43,9 @@
  (set-env! :source-paths #{"src" "test"})
  (comp
   (test-cljs
-   :cljs-opts {:process-shim false}
+   :cljs-opts {:process-shim false
+               :elide-asserts true}
+   :optimizations :advanced
    :namespaces [#".*test.*"])))
 
 (deftask repl-server

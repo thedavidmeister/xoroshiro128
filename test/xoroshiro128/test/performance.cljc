@@ -31,7 +31,7 @@
 
 #?(:cljs
    (deftest ??benchmark
-    (when false
+    (when true
      (prn "benchmarking xoroshiro128.state/rand")
      (bench-rand)
 
