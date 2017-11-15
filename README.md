@@ -223,7 +223,7 @@ To disable assertions:
 - in clojure simply run `(set! *assert* false)` at any point
 - in clojurescript set the relevant compiler option `{:elide-asserts true}`
 
-CLJS benchmarks were conducted with advanced compiler optimizations enabled as this should best represent usage in production deployments. Interestingly, advanced compilation made `Math.random` calls about 6x _slower_, and `goog.math.Long` based logic ~30-60% faster.
+CLJS benchmarks were conducted on phantomjs with advanced compiler optimizations enabled as this should best represent usage in production deployments. Interestingly, advanced compilation made `Math.random` calls about 6x _slower_, and `goog.math.Long` based logic ~30-60% faster.
 
 ## Cryptography
 
