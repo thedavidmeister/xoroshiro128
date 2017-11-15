@@ -127,7 +127,7 @@ All benchmarking code is available under `xoroshiro128.test.performance`.
 
 ### Clojure
 
-I did some basic benchmarking on my laptop using [criterium](https://github.com/hugoduncan/criterium) and found ~60% speed improvement using xoroshiro128+ vs. the default Java PRNG.
+I did some basic benchmarking on my laptop using [criterium](https://github.com/hugoduncan/criterium) and found ~15% speed improvement using xoroshiro128+ vs. the default Java PRNG.
 
 As always with benchmarking, YMMV.
 
@@ -136,32 +136,32 @@ I compared `(.nextLong (java.util.Random.))` against `(xoroshiro128.core/rand)`.
 Results from `java.util.Random`:
 
 ````
-Evaluation count : 802245600 in 60 samples of 13370760 calls.
-Execution time mean : 75.230975 ns
-Execution time std-deviation : 1.344983 ns
-Execution time lower quantile : 73.255333 ns ( 2.5%)
-Execution time upper quantile : 78.972937 ns (97.5%)
-Overhead used : 1.710409 ns
+Evaluation count : 831204360 in 60 samples of 13853406 calls.
+             Execution time mean : 70.719127 ns
+    Execution time std-deviation : 0.615334 ns
+   Execution time lower quantile : 69.942200 ns ( 2.5%)
+   Execution time upper quantile : 72.194872 ns (97.5%)
+                   Overhead used : 1.675261 ns
 
-Found 4 outliers in 60 samples (6.6667 %)
-low-severe	 3 (5.0000 %)
-low-mild	 1 (1.6667 %)
-Variance from outliers : 7.7675 % Variance is slightly inflated by outliers
+Found 2 outliers in 60 samples (3.3333 %)
+	low-severe	 2 (3.3333 %)
+ Variance from outliers : 1.6389 % Variance is slightly inflated by outliers
 ````
 
 Results from `xoroshiro128.core/rand`:
 
 ````
-Evaluation count : 2080459080 in 60 samples of 34674318 calls.
-Execution time mean : 27.986250 ns
-Execution time std-deviation : 0.429291 ns
-Execution time lower quantile : 27.290695 ns ( 2.5%)
-Execution time upper quantile : 28.888978 ns (97.5%)
-Overhead used : 1.710409 ns
+Evaluation count : 964344540 in 60 samples of 16072409 calls.
+             Execution time mean : 60.520221 ns
+    Execution time std-deviation : 0.537561 ns
+   Execution time lower quantile : 59.842710 ns ( 2.5%)
+   Execution time upper quantile : 61.448311 ns (97.5%)
+                   Overhead used : 1.675261 ns
 
-Found 5 outliers in 60 samples (8.3333 %)
-low-severe	 5 (8.3333 %)
-Variance from outliers : 1.6389 % Variance is slightly inflated by outliers
+Found 2 outliers in 60 samples (3.3333 %)
+	low-severe	 1 (1.6667 %)
+	low-mild	 1 (1.6667 %)
+ Variance from outliers : 1.6389 % Variance is slightly inflated by outliers
 ````
 
 Given these results I think it's safe to recommend xoroshiro128+ as a "drop in" replacement for `(.nextLong (java.util.Random.))`.
@@ -199,22 +199,35 @@ To get "apples to apples" timings (and to seed `rand`) I created a "native rando
 
 This approach is ~100x slower than xoroshiro128+.
 
-In this case, I recommend xoroshiro128+ when:
+Overall the suitability in CLJS is not as clear cut as CLJ due to lack of native long support.
+
+I recommend xoroshiro128+ when:
 
 - Seeding the PRNG is important
-- Working with full 64 bit integers (`goog.math.Long`) is important
+- Working with the full range of 64 bit integers (`goog.math.Long`) is important
 - Wanting to work against the `xoroshiro128.prng/IPRNG` protocol
 - Compatibility with another system implementing xoroshiro128+ is important
 
-I recommend `Math.random` when working with _unseeded_ 64 bit _floats_ is acceptible.
+I recommend `Math.random` when working with an _unseeded_ PRNG outputting only [_a subset of possible floats between [0, 1]_](https://lemire.me/blog/2017/02/28/how-many-floating-point-numbers-are-in-the-interval-01/) is acceptible.
 
 I recommend `xoroshiro128.long-int/native-rand` when generating new seeds for xoroshiro128+ if UUID seeds are not suitable.
+
+### Assertions
+
+Newer versions of this library have added some assertions to help make seeding the PRNG correctly easier. The asserts add some small overhead, bringing the performance closer to the native Java PRNG for longs.
+
+The benchmarking above was conducted with assertions disabled.
+
+To disable assertions:
+
+- in clojure simply run at any point `(set! *assert* false)`
+- in clojurescript set the relevant compiler option `{:elide-asserts true}`
 
 ## Cryptography
 
 xoroshiro128+ and the family of related generators are not cryptographically secure or intended for use in cryptography.
 
-These generators are designed to produce a statistically uniform distribution at high speeds, with a reasonable period.
+These generators are designed to produce a seedable, statistically uniform distribution at high speeds, with a reasonable period.
 
 ## License
 
