@@ -47,12 +47,11 @@
 (defn native-rand
  []
  #?(:cljs
-    (long
-     (clojure.core/*
-      (if (< 0.5 (Math/random))
-       (goog.math.Long.getMaxValue)
-       (goog.math.Long.getMinValue))
-      (Math/random)))
+    ; lifted from https://cljs.github.io/api/cljs.core/random-uuid
+    (let [hex #(.toString (rand-int 16) 16)]
+     (goog.math.Long.fromString
+      (apply str (take 16 (repeatedly hex)))
+      16))
     :clj
     (.nextLong (java.util.Random.))))
 

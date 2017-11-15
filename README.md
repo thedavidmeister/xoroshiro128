@@ -1,6 +1,6 @@
 # xoroshiro128+
 
-This is a clojure implementation of the xoroshiro128+ PRNG described at http://xoroshiro.di.unimi.it/
+This is a Clojure(Script) implementation of the xoroshiro128+ PRNG described at http://xoroshiro.di.unimi.it/
 
 The algorithm has been shown to be fast and produce superior statistical results to many PRNGs shipped with languages, [including Java](http://stackoverflow.com/questions/453479/how-good-is-java-util-random). The statistical results have been verified in both PractRand and TestU01 by the authors.
 
@@ -14,7 +14,7 @@ Both xorshift128+ and xoroshiro128+ have a period of 2<sup>128</sup> but xoroshi
 
 ## Installation
 
-### Leiningen
+### Leiningen/Boot
 
 Add the following to your dependencies.
 
@@ -39,9 +39,9 @@ Everything is in `xoroshiro128.core`.
 
 The simplest usage is to simply call `rand` to generate a random long.
 
-This uses an atom to store the state of the prng, which is updated to the next value in sequence on each call to `rand`.
+This uses a volatile to store the state of the prng, which is updated to the next value in sequence on each call to `rand`. **Simple calls to `rand` are not thread safe, you may see duplicate values across parallel threads as "the next value in the sequence" is subject to race conditions. See below for more advanced usage that can help avoid this if it is a problem for you**.
 
-`rand` is automatically seeded by `java.util.Random`, passed through splitmix64, and so should Just Work.
+`rand` is automatically seeded by `java.util.Random` or `Math.random`, passed through splitmix64, and so should Just Work.
 
 This atom can be manually reset/seeded (e.g. during testing) by calling `seed-rand!` and passing it a long. Internally, as per the suggestion in the reference implementation, this long will be passed through a splitmix64 generator to generate the two 64 bit seeds needed for the xoroshiro128+ algorithm. `seed-rand!` also accepts two arguments, which should both be longs to pass directly to xoroshiro128+ (no splitmix64 involved).
 
@@ -85,13 +85,15 @@ Additionally, we can inspect any item in the sequence to extract the seed, allow
 
 Seeds for the xoroshiro128+ algorithm must be 128 bit (as the name implies).
 
-As clojure supports 64 bit numbers (longs) but not 128 bit numbers, the seed is represented internally as two longs in a vector.
+As clojure on the JVM supports 64 bit integers (longs) but not 128 bit integers, the seed is represented internally as two longs in a vector.
 
-As mentioned above, if only a single long is available to seed the PRNG, the splitmix algorithm can be used to extrapolate further longs to use as a seed. For convenience `seed64->seed128` is provided convert a 64 bit seed into a 128 bit seed. This function is used internally when only a single long is provided.
+The situation is slightly more complex in clojurescript as JavaScript does _not_ provide native support 64 bit integers, only 64 bit _floats_. The `google.math.Long` class from Google Closure is used to provide 64 bit integer support, and then 128 bit seed support using two longs as per the clojure implementation.
 
-It is worth noting that converting a 64 bit seed to a 128 bit seed using `seed64->seed128` is a deterministic process, i.e. any given long always provides the same seed. This means the pool of available seeds is 64 bits, and is not magically increased to 128 bits. Whether this matters or not is entirely contextual, but providing 128 bit seeds will drastically increase the size of the pool of available pseudo random sequences to draw upon.
+As mentioned above, if only a single long is available to seed the PRNG, the splitmix algorithm can be used to extrapolate further longs to use as a seed. For convenience `long->seed128` is provided convert a 64 bit seed into a 128 bit seed. This function is used internally when only a single long is provided.
 
-As UUIDs represent 128 bit numbers, they are also supported for convenience as seed values both via. the `xoroshiro128+` function and `uuid->seed128`.
+It is worth noting that converting a 64 bit seed to a 128 bit seed using `long->seed128` is a deterministic process, i.e. any given long always provides the same seed. This means the pool of available seeds is 64 bits, and is not magically increased to 128 bits. Whether this matters or not is entirely contextual, but providing 128 bit seeds will drastically increase the size of the pool of available pseudo random sequences to draw upon.
+
+As UUIDs represent 128 bit integers (hexadecimal), they are also supported for convenience as seed values both via. the `xoroshiro128+` function and `uuid->seed128`. Note that UUID generation functions leave a few bits of the UUID static to indicate the UUID version and variant - while the seed pool for a given UUID generator is much larger than a single 64 bit seed, it is still smaller than two independant 64 bit seeds.
 
 The current seed value can be extracted as a 128 bit seed vector from both `Xoroshiro128+` and `Splitmix64` type data with the `seed` function.
 
@@ -120,6 +122,10 @@ The outputs of Splitmix64 next value, Xoroshiro128+ next value, and the Xoroshir
 Dozens of values were generated from https://ideone.com/PuauK5 and fed directly into the expected outputs for the [test suite](https://github.com/thedavidmeister/xoroshiro128/blob/master/test/xoroshiro128/core_test.clj).
 
 ## Performance
+
+All benchmarking code is available under `xoroshiro128.test.performance`.
+
+### Clojure
 
 I did some basic benchmarking on my laptop using [criterium](https://github.com/hugoduncan/criterium) and found ~60% speed improvement using xoroshiro128+ vs. the default Java PRNG.
 
@@ -157,6 +163,52 @@ Found 5 outliers in 60 samples (8.3333 %)
 low-severe	 5 (8.3333 %)
 Variance from outliers : 1.6389 % Variance is slightly inflated by outliers
 ````
+
+Given these results I think it's safe to recommend xoroshiro128+ as a "drop in" replacement for `(.nextLong (java.util.Random.))`.
+
+### ClojureScript
+
+Unsurprisingly the performance of `goog.math.Long` is significantly worse across the board than native JavaScript floats.
+
+I'm not aware of any benchmarking tool for CLJS that is as sophisticated as criterium, so I simply ran each function 1 million times and recorded the timestamps with `performance.now`.
+
+Results:
+
+```
+"benchmarking xoroshiro128.state/rand"
+321.11976099999987
+"benchmarking xoroshiro128.long-int/native-rand"
+32670.762584000004
+"benchmarking Math.random"
+8.543898000003537
+```
+
+These numbers seem to wobble by around +/- 20% on subsequent runs.
+
+We can see that xoroshiro128+ is ~40x slower than `Math.random` but it's a bit "apples vs. oranges" as `Math.random` produces floats between [0, 1] and xoroshiro128+ produces `goog.math.Long` objects across the full 64 bit integer range.
+
+To get "apples to apples" timings (and to seed `rand`) I created a "native random long" function that works exactly like the internals of `random-uuid`, but stops halfway to return a single `goog.math.Long` instead of a full UUID:
+
+```
+; lifted from https://cljs.github.io/api/cljs.core/random-uuid
+(let [hex #(.toString (rand-int 16) 16)]
+ (goog.math.Long.fromString
+  (apply str (take 16 (repeatedly hex)))
+  16))
+```
+
+This approach is ~100x slower than xoroshiro128+.
+
+In this case, I recommend xoroshiro128+ when:
+
+- Seeding the PRNG is important
+- Working with full 64 bit integers (`goog.math.Long`) is important
+- Wanting to work against the `xoroshiro128.prng/IPRNG` protocol
+- Compatibility with another system implementing xoroshiro128+ is important
+
+I recommend `Math.random` when working with _unseeded_ 64 bit _floats_ is acceptible.
+
+I recommend `xoroshiro128.long-int/native-rand` when generating new seeds for xoroshiro128+ if UUID seeds are not suitable.
 
 ## Cryptography
 

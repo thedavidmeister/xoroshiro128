@@ -29,13 +29,14 @@
  []
  (bench x/rand))
 
-; #?(:cljs
-;    (deftest ??foo
-;     (prn "benchmarking rand")
-;     (bench-rand)
-;
-;     (prn "benchmarking native random long")
-;     (bench-native)
-;
-;     (prn "benchmarking math random")
-;     (bench Math.random)))
+#?(:cljs
+   (deftest ??benchmark
+    (when false
+     (prn "benchmarking xoroshiro128.state/rand")
+     (bench-rand)
+
+     (prn "benchmarking xoroshiro128.long-int/native-rand")
+     (bench-native)
+
+     (prn "benchmarking Math.random")
+     (bench Math.random))))
