@@ -39,7 +39,7 @@ Everything is in `xoroshiro128.core`.
 
 The simplest usage is to simply call `rand` to generate a random long.
 
-This uses a atom to store the state of the prng, which is updated to the next value in sequence on each call to `rand`. **Simple calls to `rand` are not thread safe, you may see duplicate values across parallel threads as "the next value in the sequence" is subject to race conditions. See below for more advanced usage that can help avoid this if it is a problem for you**.
+This uses an atom to store the state of the prng, which is updated to the next value in sequence on each call to `rand`. **Simple calls to `rand` are not thread safe, you may see duplicate values across parallel threads as "the next value in the sequence" is subject to race conditions. See below for more advanced usage that can help avoid this if it is a problem for you**.
 
 `rand` is automatically seeded by `java.util.Random` or `Math.random`, passed through splitmix64, and so should Just Work.
 
