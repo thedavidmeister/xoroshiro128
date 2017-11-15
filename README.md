@@ -207,7 +207,7 @@ I recommend xoroshiro128+ when:
 - Wanting to work against the `xoroshiro128.prng/IPRNG` protocol
 - Compatibility with another system implementing xoroshiro128+ is important
 
-I recommend `Math.random` when working with an _unseeded_ PRNG outputting only [_a subset of possible floats between [0, 1]_](https://lemire.me/blog/2017/02/28/how-many-floating-point-numbers-are-in-the-interval-01/) is acceptible.
+I recommend `Math.random` when working with an _unseeded_ PRNG with an _undefined algorithm_ outputting only _a subset of all possible floats_, [specifically those between [0, 1]](https://lemire.me/blog/2017/02/28/how-many-floating-point-numbers-are-in-the-interval-01/) is acceptible.
 
 I recommend `xoroshiro128.long-int/native-rand` when generating new seeds for xoroshiro128+ if UUID seeds are not suitable.
 
@@ -215,7 +215,7 @@ I recommend `xoroshiro128.long-int/native-rand` when generating new seeds for xo
 
 CLJS benchmarks were conducted on Chrome with the `:advanced` compiler optimization flag as this should best represent usage in production deployments. Interestingly, advanced compilation made `Math.random` calls about 6x _slower_, and `goog.math.Long` based logic ~30-60% faster.
 
-Fair warning that changing CLJS environment parameters such as the browser, assertion eliding, and compilation optimisations _drastically_ change the absolute and relative benchmark timings - in some cases by 100% or more.
+Fair warning that changing the browser and CLJS compilation optimisations level _drastically_ changes the absolute and relative benchmark timings - in some cases by 100% or more.
 
 ## Cryptography
 
