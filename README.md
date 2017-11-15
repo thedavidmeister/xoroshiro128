@@ -87,7 +87,7 @@ Seeds for the xoroshiro128+ algorithm must be 128 bit (as the name implies).
 
 As clojure on the JVM supports 64 bit integers (longs) but not 128 bit integers, the seed is represented internally as two longs in a vector.
 
-The situation is slightly more complex in clojurescript as JavaScript does _not_ provide native support 64 bit integers, only 64 bit _floats_. The `google.math.Long` class from Google Closure is used to provide 64 bit integer support, and then 128 bit seed support using two longs as per the clojure implementation.
+The situation is slightly more complex in clojurescript as JavaScript does _not_ provide native support for 64 bit integers, only 64 bit _floats_. The `google.math.Long` class from Google Closure is used to provide 64 bit integer support, and then 128 bit seed support using two longs as per the clojure implementation.
 
 As mentioned above, if only a single long is available to seed the PRNG, the splitmix algorithm can be used to extrapolate further longs to use as a seed. For convenience `long->seed128` is provided convert a 64 bit seed into a 128 bit seed. This function is used internally when only a single long is provided.
 
