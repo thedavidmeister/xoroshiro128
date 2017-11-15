@@ -93,7 +93,7 @@ As mentioned above, if only a single long is available to seed the PRNG, the spl
 
 It is worth noting that converting a 64 bit seed to a 128 bit seed using `long->seed128` is a deterministic process, i.e. any given long always provides the same seed. This means the pool of available seeds is 64 bits, and is not magically increased to 128 bits. Whether this matters or not is entirely contextual, but providing 128 bit seeds will drastically increase the size of the pool of available pseudo random sequences to draw upon.
 
-As UUIDs represent 128 bit integers (hexadecimal), they are also supported for convenience as seed values both via. the `xoroshiro128+` function and `uuid->seed128`. Note that UUID generation functions leave a few bits of the UUID static to indicate the UUID version and variant - while the seed pool for a given UUID generator is much larger than a single 64 bit seed, it is still smaller than two independant 64 bit seeds.
+As UUIDs represent 128 bit integers (hexadecimal), they are also supported for convenience as seed values both via. the `xoroshiro128+` function and `uuid->seed128`. Note that UUID generation functions leave a few bits of the UUID static to indicate the UUID version and variant. This means the seed pool for a given UUID generation function is both orders of magnitude larger than a single 64 bit seed, and smaller than two independant 64 bit seeds.
 
 The current seed value can be extracted as a 128 bit seed vector from both `Xoroshiro128+` and `Splitmix64` type data with the `seed` function.
 
