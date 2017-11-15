@@ -25,7 +25,7 @@ jobs:
           - v1-dependencies-
 
 
-      # - run: boot tests-cljs
+      - run: boot tests-cljs
       - run: boot test
 
       - save_cache:
