@@ -218,7 +218,7 @@ I recommend `xoroshiro128.long-int/native-rand` when generating new seeds for xo
 
 CLJS benchmarks were conducted on Chrome with the `:advanced` compiler optimization flag as this should best represent usage in production deployments. Interestingly, advanced compilation made `Math.random` calls about 6x _slower_, and `goog.math.Long` based logic ~30-60% faster.
 
-Fair warning that changing CLJS environment parameters such as the browser, assertion eliding, and compilation optimisations _drastically_ changes the absolute and relative benchmark timings - in some cases by 100% or more.
+Fair warning that changing CLJS environment parameters such as the browser, assertion eliding, and compilation optimisations _drastically_ change the absolute and relative benchmark timings - in some cases by 100% or more.
 
 ## Cryptography
 
