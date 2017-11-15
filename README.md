@@ -127,7 +127,7 @@ All benchmarking code is available under `xoroshiro128.test.performance`.
 
 ### Clojure
 
-I did some basic benchmarking on my laptop using [criterium](https://github.com/hugoduncan/criterium) and found ~15% speed improvement using xoroshiro128+ vs. the default Java PRNG.
+I did some basic benchmarking on my laptop using [criterium](https://github.com/hugoduncan/criterium) and found ~66% speed improvement using xoroshiro128+ vs. the default Java PRNG.
 
 As always with benchmarking, YMMV.
 
@@ -151,20 +151,20 @@ Found 2 outliers in 60 samples (3.3333 %)
 Results from `xoroshiro128.core/rand`:
 
 ````
-Evaluation count : 964344540 in 60 samples of 16072409 calls.
-             Execution time mean : 60.520221 ns
-    Execution time std-deviation : 0.537561 ns
-   Execution time lower quantile : 59.842710 ns ( 2.5%)
-   Execution time upper quantile : 61.448311 ns (97.5%)
-                   Overhead used : 1.675261 ns
+Evaluation count : 2301527460 in 60 samples of 38358791 calls.
+             Execution time mean : 24.654548 ns
+    Execution time std-deviation : 0.398656 ns
+   Execution time lower quantile : 24.329306 ns ( 2.5%)
+   Execution time upper quantile : 25.960526 ns (97.5%)
+                   Overhead used : 1.687464 ns
 
-Found 2 outliers in 60 samples (3.3333 %)
-	low-severe	 1 (1.6667 %)
-	low-mild	 1 (1.6667 %)
- Variance from outliers : 1.6389 % Variance is slightly inflated by outliers
+Found 5 outliers in 60 samples (8.3333 %)
+	low-severe	 2 (3.3333 %)
+	low-mild	 3 (5.0000 %)
+ Variance from outliers : 2.0241 % Variance is slightly inflated by outliers
 ````
 
-Given these results I think it's safe to recommend xoroshiro128+ as a "drop in" replacement for `(.nextLong (java.util.Random.))`.
+Given these results I think it's safe to recommend xoroshiro128+ as a mostly "drop in" replacement for `(.nextLong (java.util.Random.))`.
 
 ### ClojureScript
 
@@ -212,18 +212,9 @@ I recommend `Math.random` when working with an _unseeded_ PRNG outputting only [
 
 I recommend `xoroshiro128.long-int/native-rand` when generating new seeds for xoroshiro128+ if UUID seeds are not suitable.
 
-### Assertions & optimizations
+### CLJS optimizations & environment
 
-Newer versions of this library have added some assertions to help make seeding the PRNG correctly easier. The assertions add ~10-15% overhead so disable them if this matters.
-
-The benchmarking above was conducted with assertions disabled.
-
-To disable assertions:
-
-- in clojure simply run `(set! *assert* false)` at any point
-- in clojurescript set the relevant compiler option `{:elide-asserts true}`
-
-CLJS benchmarks were conducted on chrome with advanced compiler optimizations enabled as this should best represent usage in production deployments. Interestingly, advanced compilation made `Math.random` calls about 6x _slower_, and `goog.math.Long` based logic ~30-60% faster.
+CLJS benchmarks were conducted on Chrome with the `:advanced` compiler optimization flag as this should best represent usage in production deployments. Interestingly, advanced compilation made `Math.random` calls about 6x _slower_, and `goog.math.Long` based logic ~30-60% faster.
 
 Fair warning that changing CLJS environment parameters such as the browser, assertion eliding, and compilation optimisations _drastically_ changes the absolute and relative benchmark timings - in some cases by 100% or more.
 

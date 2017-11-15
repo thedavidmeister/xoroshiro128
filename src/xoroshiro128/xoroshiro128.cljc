@@ -19,15 +19,21 @@
    [_]
    (xoroshiro128.long-int/+ a b))
 
+  ; This is critical perf path, so all fn calls are inlined rather than dialing
+  ; out to xoroshiro128.long-int.
+  ; criterium shows this approach achieves ~25ms vs ~60-75ms in JVM
+  ; cljs advanced optimisations seems to smooth out any differences here so we
+  ; can use long-int/* normally.
   (next
    [_]
-   (let [x (xoroshiro128.long-int/bit-xor a b)
-         a' (xoroshiro128.long-int/bit-xor
-             (xoroshiro128.long-int/bit-rotate-left a 55)
-             (xoroshiro128.long-int/bit-xor
-              x
-              (xoroshiro128.long-int/bit-shift-left x 14)))
-         b' (xoroshiro128.long-int/bit-rotate-left x 36)]
+   (let [x #?(:clj (bit-xor a b)
+              :cljs (xoroshiro128.long-int/bit-xor a b))
+         x-xorshi #?(:clj (bit-xor x (bit-shift-left x 14))
+                     :cljs (xoroshiro128.long-int/bit-xor x (xoroshiro128.long-int/bit-shift-left x 14)))
+         a' #?(:clj (bit-xor x-xorshi (Long/rotateLeft a 55))
+               :cljs (xoroshiro128.long-int/bit-xor x-xorshi (xoroshiro128.long-int/bit-rotate-left a 55)))
+         b' #?(:clj (Long/rotateLeft x 36)
+               :cljs (xoroshiro128.long-int/bit-rotate-left x 36))]
     (Xoroshiro128+. a' b')))
 
   (seed

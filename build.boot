@@ -43,8 +43,7 @@
  (set-env! :source-paths #{"src" "test"})
  (comp
   (test-cljs
-   :cljs-opts {:process-shim false
-               :elide-asserts true}
+   :cljs-opts {:process-shim false}
    :optimizations :advanced
    ; :js-env :chrome
    :namespaces [#".*test.*"])))
