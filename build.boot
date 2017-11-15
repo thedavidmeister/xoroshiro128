@@ -1,5 +1,5 @@
 (def project 'thedavidmeister/xoroshiro128)
-(def version "1.1.1")
+(def version "1.1.2-SNAPSHOT")
 
 (set-env!
  :source-paths #{"src"}
