@@ -21,7 +21,7 @@
 
   ; This is critical perf path, so all fn calls are inlined rather than dialing
   ; out to xoroshiro128.long-int.
-  ; criterium shows this approach achieves ~25ms vs ~60-75ms in JVM
+  ; criterium shows this approach achieves ~25ns vs ~60-75ns in JVM
   ; cljs advanced optimisations seems to smooth out any differences here so we
   ; can use long-int/* normally.
   (next

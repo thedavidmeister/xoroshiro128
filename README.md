@@ -199,6 +199,8 @@ To get "apples to apples" timings (and to seed `rand`) I created a "native rando
 
 This approach is ~33x slower than xoroshiro128+ and ~540x slower than `Math.random` (due to the string manipulation, I assume).
 
+We see ~290ns per call (290ms for 1 000 000 calls) in CLJS vs. ~25ns per call in CLJ.
+
 Overall the use-cases in CLJS are not as clear cut as CLJ due to lack of native long support.
 
 I recommend xoroshiro128+ when:
