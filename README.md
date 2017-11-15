@@ -8,27 +8,12 @@ xoroshiro128+ is designed to be the successor to xorshift128+, currently used in
 
 Both xorshift128+ and xoroshiro128+ have a period of 2<sup>128</sup> but xoroshiro128+ is **benchmarked by the authors as 20% faster and with 20% fewer failures in BigCrush than its predecessor.**
 
+## Installation
+
 [![Clojars Project](https://img.shields.io/clojars/v/xoroshiro128.svg)](https://clojars.org/xoroshiro128)
 
 [![CircleCI](https://circleci.com/gh/thedavidmeister/xoroshiro128.svg?style=svg)](https://circleci.com/gh/thedavidmeister/xoroshiro128)
 
-## Installation
-
-### Leiningen/Boot
-
-Add the following to your dependencies.
-
-`[xoroshiro128 "1.1.0"]`
-
-### Maven
-
-````
-<dependency>
-  <groupId>xoroshiro128</groupId>
-  <artifactId>xoroshiro128</artifactId>
-  <version>1.1.0</version>
-</dependency>
-````
 ## Usage
 
 Everything is in `xoroshiro128.core`.
@@ -39,11 +24,23 @@ Everything is in `xoroshiro128.core`.
 
 The simplest usage is to simply call `rand` to generate a random long.
 
-This uses an atom to store the state of the prng, which is updated to the next value in sequence on each call to `rand`. **Simple calls to `rand` are [currently not thread safe](https://github.com/thedavidmeister/xoroshiro128/issues/7), you may see duplicate values across parallel threads as "the next value in the sequence" is subject to race conditions. See below for more advanced usage that can help avoid this if it is a problem for you**.
+This uses an atom to store the state of the prng, which is updated to the next value in sequence on each call to `rand`.
 
 `rand` is automatically seeded by `java.util.Random` or `Math.random`, passed through splitmix64, and so should Just Work.
 
 This atom can be manually reset/seeded (e.g. during testing) by calling `seed-rand!` and passing it a long. Internally, as per the suggestion in the reference implementation, this long will be passed through a splitmix64 generator to generate the two 64 bit seeds needed for the xoroshiro128+ algorithm. `seed-rand!` also accepts two arguments, which should both be longs to pass directly to xoroshiro128+ (no splitmix64 involved).
+
+#### Parallel calls to `rand`
+
+As of version `1.1.1`, calls to `rand` in parallel will use `compare-and-set!` to ensure that each value is returned only once across all threads. No guarantees about the ordering of `rand` are made for parallel execution.
+
+For example, using `pmap` and `map` to produce two sequences of random numbers with `rand`, starting with the same seed, would:
+
+- create the same _set_ of longs twice
+- _not order_ the sequences in the same way, `pmap` will have incorrect ordering
+- _not_ duplicate any values in `pmap` that aren't duplicated in `map`
+
+See `xoroshiro128.test.state` for examples.
 
 ### Advanced
 
