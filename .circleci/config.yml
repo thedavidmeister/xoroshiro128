@@ -39,5 +39,5 @@ jobs:
       - deploy:
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              boot deploy
+              boot build-jar push-snapshot
             fi
