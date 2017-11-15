@@ -1,6 +1,8 @@
 (ns xoroshiro128.uuid
  #?(:cljs (:refer-clojure :exclude [random-uuid]))
- #?(:cljs (:require goog.math.Long)))
+ (:require
+  clojure.string
+  #?(:cljs goog.math.Long)))
 
 #?(:clj (set! *warn-on-reflection* true))
 #?(:clj (set! *unchecked-math* :warn-on-boxed))
@@ -14,7 +16,7 @@
     :cljs (cljs.core/random-uuid)))
 
 (defn as-longs
- [u]
+ [^java.util.UUID u]
  #?(:clj [(.getMostSignificantBits u) (.getLeastSignificantBits u)]
     :cljs
     (as-> u u

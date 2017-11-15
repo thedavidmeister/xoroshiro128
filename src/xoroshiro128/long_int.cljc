@@ -1,5 +1,5 @@
 (ns xoroshiro128.long-int
- (:refer-clojure :exclude [long unsigned-bit-shift-right bit-shift-left bit-and bit-xor * + =])
+ (:refer-clojure :exclude [long unsigned-bit-shift-right bit-shift-left bit-and bit-xor * + = -])
  #?(:cljs (:require goog.math.Long)))
 
 #?(:clj (set! *warn-on-reflection* true))
@@ -29,6 +29,11 @@
  #?(:cljs (.add a b)
     :clj (clojure.core/+ a b)))
 
+(defn -
+ [^long a ^long b]
+ #?(:cljs (.subtract a b)
+    :clj (clojure.core/- a b)))
+
 (defn *
  [^long a ^long b]
  #?(:cljs (.multiply a b)
@@ -42,9 +47,12 @@
 (defn native-rand
  []
  #?(:cljs
-    (*
-     (long "9223372036854775807")
-     (long (Math/random)))
+    (long
+     (clojure.core/*
+      (if (< 0.5 (Math/random))
+       (goog.math.Long.getMaxValue)
+       (goog.math.Long.getMinValue))
+      (Math/random)))
     :clj
     (.nextLong (java.util.Random.))))
 
@@ -75,6 +83,6 @@
  #?(:cljs
     (.or
      (.shiftLeft x n)
-     (.shiftRightUnsigned x (- n)))
+     (.shiftRightUnsigned x (clojure.core/- n)))
     :clj
     (Long/rotateLeft x n)))
