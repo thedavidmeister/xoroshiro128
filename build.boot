@@ -64,4 +64,4 @@
  []
  (comp
   (build-jar)
-  (push-snapshot)))
+  (push-release)))
