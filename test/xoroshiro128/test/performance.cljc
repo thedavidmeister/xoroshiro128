@@ -29,13 +29,13 @@
  []
  (bench x/rand))
 
-#?(:cljs
-   (deftest ??foo
-    (prn "benchmarking rand")
-    (bench-rand)
-
-    (prn "benchmarking native random long")
-    (bench-native)
-
-    (prn "benchmarking math random")
-    (bench Math.random)))
+; #?(:cljs
+;    (deftest ??foo
+;     (prn "benchmarking rand")
+;     (bench-rand)
+;
+;     (prn "benchmarking native random long")
+;     (bench-native)
+;
+;     (prn "benchmarking math random")
+;     (bench Math.random)))
