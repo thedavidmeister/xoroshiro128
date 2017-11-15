@@ -187,7 +187,9 @@ These numbers seem to wobble by around +/- 20% on subsequent runs.
 
 We can see that xoroshiro128+ is ~16x slower than `Math.random` but it's a bit "apples vs. oranges" as `Math.random` produces floats between [0, 1] and xoroshiro128+ produces `goog.math.Long` objects across the full 64 bit integer range.
 
-To get "apples to apples" timings (and to seed `rand`) I created a "native random long" function that works exactly like the internals of `random-uuid`, but stops halfway to return a single `goog.math.Long` instead of a full UUID:
+We see ~290ns per call (0.29s for 1 000 000 calls) in CLJS vs. ~25ns per call in CLJ. This puts the JVM at around 10x faster than JS for this particular use-case. This is also another "apples vs. oranges" comparison as the JVM and JS runtime environments are obviously very different.
+
+To get "apples to apples" timings within JS (and to seed `rand`) I created a "native random long" function that works exactly like the internals of `random-uuid`, but stops halfway to return a single `goog.math.Long` instead of a full UUID:
 
 ```
 ; lifted from https://cljs.github.io/api/cljs.core/random-uuid
@@ -199,14 +201,12 @@ To get "apples to apples" timings (and to seed `rand`) I created a "native rando
 
 This approach is ~33x slower than xoroshiro128+ and ~540x slower than `Math.random` (due to the string manipulation, I assume).
 
-We see ~290ns per call (290ms for 1 000 000 calls) in CLJS vs. ~25ns per call in CLJ.
-
-Overall the use-cases in CLJS are not as clear cut as CLJ due to lack of native long support.
+Overall the use-cases for xoroshiro128+ in CLJS are not as clear cut as CLJ due to lack of native long support.
 
 I recommend xoroshiro128+ when:
 
 - Seeding the PRNG is important
-- Working with the full range of 64 bit integers (`goog.math.Long`) is important
+- Working with the full range of 64 bit integers (`goog.math.Long`) is acceptible or even important
 - Wanting to work against the `xoroshiro128.prng/IPRNG` protocol
 - Compatibility with another system implementing xoroshiro128+ is important
 
