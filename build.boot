@@ -46,6 +46,7 @@
    :cljs-opts {:process-shim false
                :elide-asserts true}
    :optimizations :advanced
+   ; :js-env :chrome
    :namespaces [#".*test.*"])))
 
 (deftask repl-server

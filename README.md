@@ -175,17 +175,17 @@ I'm not aware of any benchmarking tool for CLJS that is as sophisticated as crit
 Results:
 
 ```
-"benchmarking xoroshiro128.state/rand"
-251.7517679999999
-"benchmarking xoroshiro128.long-int/native-rand"
-13292.690328
-"benchmarking Math.random"
-47.84667500000069
+LOG: '"benchmarking xoroshiro128.state/rand"'
+LOG: '290.325'
+LOG: '"benchmarking xoroshiro128.long-int/native-rand"'
+LOG: '9787.36'
+LOG: '"benchmarking Math.random"'
+LOG: '18.715000000000146'
 ```
 
 These numbers seem to wobble by around +/- 20% on subsequent runs.
 
-We can see that xoroshiro128+ is ~5x slower than `Math.random` but it's a bit "apples vs. oranges" as `Math.random` produces floats between [0, 1] and xoroshiro128+ produces `goog.math.Long` objects across the full 64 bit integer range.
+We can see that xoroshiro128+ is ~16x slower than `Math.random` but it's a bit "apples vs. oranges" as `Math.random` produces floats between [0, 1] and xoroshiro128+ produces `goog.math.Long` objects across the full 64 bit integer range.
 
 To get "apples to apples" timings (and to seed `rand`) I created a "native random long" function that works exactly like the internals of `random-uuid`, but stops halfway to return a single `goog.math.Long` instead of a full UUID:
 
@@ -197,7 +197,7 @@ To get "apples to apples" timings (and to seed `rand`) I created a "native rando
   16))
 ```
 
-This approach is ~50x slower than xoroshiro128+ and ~260x slower than `Math.random` (due to the string manipulation, I assume).
+This approach is ~33x slower than xoroshiro128+ and ~540x slower than `Math.random` (due to the string manipulation, I assume).
 
 Overall the use-cases in CLJS are not as clear cut as CLJ due to lack of native long support.
 
@@ -223,7 +223,9 @@ To disable assertions:
 - in clojure simply run `(set! *assert* false)` at any point
 - in clojurescript set the relevant compiler option `{:elide-asserts true}`
 
-CLJS benchmarks were conducted on phantomjs with advanced compiler optimizations enabled as this should best represent usage in production deployments. Interestingly, advanced compilation made `Math.random` calls about 6x _slower_, and `goog.math.Long` based logic ~30-60% faster.
+CLJS benchmarks were conducted on chrome with advanced compiler optimizations enabled as this should best represent usage in production deployments. Interestingly, advanced compilation made `Math.random` calls about 6x _slower_, and `goog.math.Long` based logic ~30-60% faster.
+
+Fair warning that changing CLJS environment parameters such as the browser, assertion eliding, and compilation optimisations _drastically_ changes the absolute and relative benchmark timings - in some cases by 100% or more.
 
 ## Cryptography
 
