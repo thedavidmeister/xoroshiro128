@@ -26,7 +26,7 @@ Add the following to your dependencies.
 <dependency>
   <groupId>xoroshiro128</groupId>
   <artifactId>xoroshiro128</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>1.1.0</version>
 </dependency>
 ````
 ## Usage
