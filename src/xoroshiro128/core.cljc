@@ -6,7 +6,7 @@
   xoroshiro128.splitmix64
   xoroshiro128.xoroshiro128
   xoroshiro128.state
-  [xoroshiro128.long-int :as l]))
+  [cljc-long.core :as l]))
 
 #?(:clj (set! *warn-on-reflection* true))
 #?(:clj (set! *unchecked-math* :warn-on-boxed))
