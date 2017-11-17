@@ -1,6 +1,6 @@
 (ns xoroshiro128.test.performance
  (:require
-  xoroshiro128.long-int
+  cljc-long.core
   [xoroshiro128.core :as x]
   #?(:clj criterium.core)
   [clojure.test :refer [deftest is]]))
@@ -23,7 +23,7 @@
 
 (defn bench-native
  []
- (bench xoroshiro128.long-int/native-rand))
+ (bench cljc-long.core/native-rand))
 
 (defn bench-rand
  []
@@ -35,7 +35,7 @@
      (prn "benchmarking xoroshiro128.state/rand")
      (bench-rand)
 
-     (prn "benchmarking xoroshiro128.long-int/native-rand")
+     (prn "benchmarking cljc-long.core/native-rand")
      (bench-native)
 
      (prn "benchmarking Math.random")

@@ -1,7 +1,7 @@
 (ns xoroshiro128.splitmix64
  (:require
   xoroshiro128.prng
-  xoroshiro128.long-int
+  cljc-long.core
   xoroshiro128.constants))
 
 #?(:clj (set! *warn-on-reflection* true))
@@ -16,28 +16,28 @@
    [_]
    (as-> a a
 
-     (xoroshiro128.long-int/+ a xoroshiro128.constants/L-0x9E3779B97F4A7C15)
+     (cljc-long.core/+ a xoroshiro128.constants/L-0x9E3779B97F4A7C15)
 
-     (xoroshiro128.long-int/*
-      (xoroshiro128.long-int/bit-xor
+     (cljc-long.core/*
+      (cljc-long.core/bit-xor
        a
-       (xoroshiro128.long-int/unsigned-bit-shift-right a 30))
+       (cljc-long.core/unsigned-bit-shift-right a 30))
       xoroshiro128.constants/L-0xBF58476D1CE4E5B9)
 
-     (xoroshiro128.long-int/*
-      (xoroshiro128.long-int/bit-xor
+     (cljc-long.core/*
+      (cljc-long.core/bit-xor
        a
-       (xoroshiro128.long-int/unsigned-bit-shift-right a 27))
+       (cljc-long.core/unsigned-bit-shift-right a 27))
       xoroshiro128.constants/L-0x94D049BB133111EB)
 
-     (xoroshiro128.long-int/bit-xor
+     (cljc-long.core/bit-xor
       a
-      (xoroshiro128.long-int/unsigned-bit-shift-right a 31))))
+      (cljc-long.core/unsigned-bit-shift-right a 31))))
 
  (next
   [_]
   (Splitmix64.
-   (xoroshiro128.long-int/+
+   (cljc-long.core/+
     a
     xoroshiro128.constants/L-0x9E3779B97F4A7C15)))
 
@@ -45,4 +45,4 @@
 
 (defn splitmix64
  [a]
- (Splitmix64. (xoroshiro128.long-int/long a)))
+ (Splitmix64. (cljc-long.core/long a)))

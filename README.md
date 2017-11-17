@@ -174,7 +174,7 @@ Results:
 ```
 LOG: '"benchmarking xoroshiro128.state/rand"'
 LOG: '290.325'
-LOG: '"benchmarking xoroshiro128.long-int/native-rand"'
+LOG: '"benchmarking cljc-long.core/native-rand"'
 LOG: '9787.36'
 LOG: '"benchmarking Math.random"'
 LOG: '18.715000000000146'
@@ -209,7 +209,7 @@ I recommend xoroshiro128+ when:
 
 I recommend `Math.random` when working with an _unseeded_ PRNG with an _undefined algorithm_ outputting only _a subset of all possible floats_, [specifically those between [0, 1]](https://lemire.me/blog/2017/02/28/how-many-floating-point-numbers-are-in-the-interval-01/) is acceptible.
 
-I recommend `xoroshiro128.long-int/native-rand` when generating new seeds for xoroshiro128+ if UUID seeds are not suitable.
+I recommend `cljc-long.core/native-rand` when generating new seeds for xoroshiro128+ if UUID seeds are not suitable.
 
 ### CLJS optimizations & environment
 

@@ -2,7 +2,7 @@
  (:refer-clojure :exclude [rand])
  (:require
   xoroshiro128.prng
-  xoroshiro128.long-int
+  cljc-long.core
   xoroshiro128.xoroshiro128))
 
 #?(:clj (set! *warn-on-reflection* true))
@@ -21,7 +21,7 @@
  ([^long a ^long b]
   (reset! rand-state (xoroshiro128.xoroshiro128/xoroshiro128+ a b))))
 
-(seed-rand! (xoroshiro128.long-int/native-rand))
+(seed-rand! (cljc-long.core/native-rand))
 
 (defn jump-rand!
  "Jumps rand. Equivalent to calling rand 2^64 times."
