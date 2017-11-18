@@ -144,7 +144,7 @@ The alternative recommendation is available for _clj only_ as `xoroshiro128.core
 
 Referencing the alternative algorithm, the authors state:
 
-"This technique is extremely fast, but _you will be generating half the values you could actually generate._"
+> "This technique is extremely fast, but _you will be generating half the values you could actually generate._"
 
 As far as I'm aware, neither JavaScript nor Google Closure provide a native/fast way to perform the operations required by the alterative algorithm. Even if this can be implemented somehow in JS, I'm dubious whether any speed advantage over the standard algorithm would survive the implementation details (e.g. juggling strings internally). Without this speed advantage the alternative algorithm is clearly inferior, so in my opinion the implementation effort is simply not justified for JavaScript.
 
