@@ -128,34 +128,43 @@
  ; This conversion guarantees that all dyadic rationals of the form k / 2−53
  ; will be equally likely. Note that this conversion prefers the high bits of x,
  ; but you can alternatively use the lowest bits.)
- (* (unsigned-bit-shift-right x 11)
+ (*
+  ^double (cljc-long.core/unsigned-bit-shift-right x 11)
   ^double xoroshiro128.constants/D-0x1p-53))
 
-(defn long->unit-float:alt
- [^long x])
- ; An alternative, faster multiplication-free operation is
+; only offering clj atm due to Double/longBitsToDouble requirement
+#?(:clj
+   (defn long->unit-float:alt
+    [^long x]
+    ; An alternative, faster multiplication-free operation is
 
- ;   #include <stdint.h>
- ;   static inline double to_double(uint64_t x) {
- ;     const union { uint64_t i}; double d; } u = { .i = UINT64_C(0x3FF) << 52 | x >> 12 };
- ;     return u.d - 1.0);
- ;   }
+    ;   #include <stdint.h>
+    ;   static inline double to_double(uint64_t x) {
+    ;     const union { uint64_t i}; double d; } u = { .i = UINT64_C(0x3FF) << 52 | x >> 12 };
+    ;     return u.d - 1.0);
+    ;   }
 
- ; The code above cooks up by bit manipulation a real number in the interval
- ; [1..2, and then subtracts one to obtain a real number in the interval
- ; [0..1. If x is chosen uniformly among 64-bit integers, d is chosen uniformly
- ; among dyadic rationals of the form k / 2−52. This is the same technique used
- ; by generators providing directly doubles, such as the dSFMT.)
+    ; The code above cooks up by bit manipulation a real number in the interval
+    ; [1..2, and then subtracts one to obtain a real number in the interval
+    ; [0..1. If x is chosen uniformly among 64-bit integers, d is chosen uniformly
+    ; among dyadic rationals of the form k / 2−52. This is the same technique used
+    ; by generators providing directly doubles, such as the dSFMT.)
 
- ; This technique is extremely fast, but you will be generating half the values
- ; you could actually generate. The same problem plagues the dSFMT. All doubles
- ; generated will have the lowest mantissa bit set to zero (I must thank Raimo
- ; Niskanen from the Erlang team for making me notice this—a previous version of
- ; this site did not mention this issue).
+    ; This technique is extremely fast, but you will be generating half the values
+    ; you could actually generate. The same problem plagues the dSFMT. All doubles
+    ; generated will have the lowest mantissa bit set to zero (I must thank Raimo
+    ; Niskanen from the Erlang team for making me notice this—a previous version of
+    ; this site did not mention this issue).
 
- ; In Java you can obtain an analogous result using suitable static methods:
+    ; In Java you can obtain an analogous result using suitable static methods:
 
- ;   Double.longBitsToDouble(0x3FFL << 52 | x >>> 12) - 1.0)
+    ;   Double.longBitsToDouble(0x3FFL << 52 | x >>> 12) - 1.0)
 
- ; To adhere to the principle of least surprise, my implementations now use the
- ; multiplicative version, everywhere.)
+    ; To adhere to the principle of least surprise, my implementations now use the
+    ; multiplicative version, everywhere.)
+    (-
+     (Double/longBitsToDouble
+      (bit-or
+       (bit-shift-left ^long xoroshiro128.constants/D-0x3FF 52)
+       (unsigned-bit-shift-right x 12)))
+     1.0)))
