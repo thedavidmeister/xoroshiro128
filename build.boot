@@ -46,7 +46,7 @@
   (test-cljs
    :cljs-opts {:process-shim false}
    :optimizations :advanced
-   :js-env :chrome
+   ; :js-env :chrome
    :namespaces [#".*test.*"])))
 
 (deftask repl-server
