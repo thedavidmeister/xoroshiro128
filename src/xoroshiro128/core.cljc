@@ -28,4 +28,4 @@
 (def rand xoroshiro128.state/rand)
 
 (def long->unit-float xoroshiro128.xoroshiro128/long->unit-float)
-(def long->unit-float xoroshiro128.xoroshiro128/long->unit-float:alt)
+#?(:clj (def long->unit-float:alt xoroshiro128.xoroshiro128/long->unit-float:alt))
