@@ -191,6 +191,21 @@ Found 5 outliers in 60 samples (8.3333 %)
  Variance from outliers : 2.0241 % Variance is slightly inflated by outliers
 ````
 
+Results from `(comp xoroshiro128.xoroshiro128/long->unit-float xoroshiro128.state/rand)`
+
+```
+Evaluation count : 1925694840 in 60 samples of 32094914 calls.
+             Execution time mean : 29.564911 ns
+    Execution time std-deviation : 0.185632 ns
+   Execution time lower quantile : 29.263758 ns ( 2.5%)
+   Execution time upper quantile : 29.912975 ns (97.5%)
+                   Overhead used : 1.684063 ns
+
+Found 1 outliers in 60 samples (1.6667 %)
+	low-severe	 1 (1.6667 %)
+ Variance from outliers : 1.6389 % Variance is slightly inflated by outliers
+```
+
 Given these results I think it's safe to recommend xoroshiro128+ as a mostly "drop in" replacement for `(.nextLong (java.util.Random.))`.
 
 ### ClojureScript
