@@ -29,3 +29,10 @@
 (def L-0xd86b048b86aa9922
  #?(:cljs (cljc-long.core/long "-2852180941702784734")
     :clj -2852180941702784734))
+
+; http://www.exploringbinary.com/hexadecimal-floating-point-constants/
+(def D-0x1p-53
+ #?(:cljs (Math/pow 2 -53)
+    :clj (Double/parseDouble "0x1.0p-53")))
+
+(def D-0x3FF (cljc-long.core/long 0x3FF))

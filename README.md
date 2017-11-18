@@ -88,6 +88,16 @@ The situation is slightly more complex in clojurescript as JavaScript does _not_
 
 As mentioned above, if only a single long is available to seed the PRNG, the splitmix algorithm can be used to extrapolate further longs to use as a seed. For convenience `long->seed128` is provided convert a 64 bit seed into a 128 bit seed. This function is used internally when only a single long is provided.
 
+The authors of Xoroshiro128+ recommend against seeding the PRNG with the output of a similar PRNG.
+
+> "research has shown that initialization must be performed with a generator radically different in nature from the one initialized to avoid correlation on similar seeds."
+
+They also mention that similar PRNGs _may_ be used internally by `Math.random` in JavaScript, depending on the browser brand and version (this could change at any time):
+
+> Albeit superseded by xoroshiro128+, xorshift128+ is presently used in the JavaScript engines of Chrome, Firefox, Safari, Microsoft Edge.
+
+For this reason I recommend _against_ providing the full 128 bits directly from the native PRNG in a web browser - pass 64 bits (1 number from `Math.random`) through `long->seed128` instead (it uses splitmix64 internally to fix this problem).
+
 It is worth noting that converting a 64 bit seed to a 128 bit seed using `long->seed128` is a deterministic process, i.e. any given long always provides the same seed. This means the pool of available seeds is 64 bits, and is not magically increased to 128 bits. Whether this matters or not is entirely contextual, but providing 128 bit seeds will drastically increase the size of the pool of available pseudo random sequences to draw upon.
 
 As UUIDs represent 128 bit integers (hexadecimal), they are also supported for convenience as seed values both via. the `xoroshiro128+` function and `uuid->seed128`. Note that UUID generation functions leave a few bits of the UUID static to indicate the UUID version and variant. This means the seed pool for a given UUID generation function is both orders of magnitude larger than a single 64 bit seed, and smaller than two independant 64 bit seeds.
@@ -117,6 +127,26 @@ If you are using simple calls to `rand` there is a `jump-rand!` function provide
 The outputs of Splitmix64 next value, Xoroshiro128+ next value, and the Xoroshiro128+ jump function have all been verified against samples from the reference C implementation.
 
 Dozens of values were generated from https://ideone.com/PuauK5 and fed directly into the expected outputs for the [test suite](https://github.com/thedavidmeister/xoroshiro128/blob/master/test/xoroshiro128/core_test.clj).
+
+## Converting to doubles in the unit interval
+
+It is a common requirement to convert our random 64 bit integers into a random decimal number between 0 and 1. For example, this is a convenient way to insulate ourselves from `goog.math.Long` in cljs as the output of such a conversion will be a native JS float.
+
+Unfortunately the naive approach of simply dividing a generated long by the the maximum long [produces a biased, non-uniform distribution](https://lemire.me/blog/2017/02/28/how-many-floating-point-numbers-are-in-the-interval-01/).
+
+The author of Xoroshiro128+ and Splitmix64 suggests two options for correctly converting from generated 64 bit integers to a 64 bit float between [0, 1).
+
+Their primary recommendation is available for both clj and cljs as `xoroshiro128.core/long->unit-float`.
+
+I recommend using this function if you don't have any specific reason to prefer the alternative.
+
+The alternative recommendation is available for _clj only_ as `xoroshiro128.core/long->unit-float:alt`.
+
+Referencing the alternative algorithm, the authors state:
+
+> "This technique is extremely fast, but _you will be generating half the values you could actually generate._"
+
+As far as I'm aware, neither JavaScript nor Google Closure provide a native/fast way to perform the operations required by the alterative algorithm. Even if this can be implemented somehow in JS, I'm dubious whether any speed advantage over the standard algorithm would survive the implementation details (e.g. juggling strings internally). Without this speed advantage the alternative algorithm is clearly inferior, so in my opinion the implementation effort is simply not justified for JavaScript.
 
 ## Performance
 
@@ -161,6 +191,21 @@ Found 5 outliers in 60 samples (8.3333 %)
  Variance from outliers : 2.0241 % Variance is slightly inflated by outliers
 ````
 
+Results from `(comp xoroshiro128.xoroshiro128/long->unit-float xoroshiro128.state/rand)`
+
+```
+Evaluation count : 1925694840 in 60 samples of 32094914 calls.
+             Execution time mean : 29.564911 ns
+    Execution time std-deviation : 0.185632 ns
+   Execution time lower quantile : 29.263758 ns ( 2.5%)
+   Execution time upper quantile : 29.912975 ns (97.5%)
+                   Overhead used : 1.684063 ns
+
+Found 1 outliers in 60 samples (1.6667 %)
+	low-severe	 1 (1.6667 %)
+ Variance from outliers : 1.6389 % Variance is slightly inflated by outliers
+```
+
 Given these results I think it's safe to recommend xoroshiro128+ as a mostly "drop in" replacement for `(.nextLong (java.util.Random.))`.
 
 ### ClojureScript
@@ -173,18 +218,20 @@ Results:
 
 ```
 LOG: '"benchmarking xoroshiro128.state/rand"'
-LOG: '290.325'
+LOG: '198.56'
+LOG: '"benchmarking xoroshiro128.state/rand as xoroshiro128.xoroshiro128/long->unit-float"'
+LOG: '3715.5350000000003'
 LOG: '"benchmarking cljc-long.core/native-rand"'
-LOG: '9787.36'
+LOG: '9810.575'
 LOG: '"benchmarking Math.random"'
-LOG: '18.715000000000146'
+LOG: '20.904999999998836'
 ```
 
 These numbers seem to wobble by around +/- 20% on subsequent runs.
 
-We can see that xoroshiro128+ is ~16x slower than `Math.random` but it's a bit "apples vs. oranges" as `Math.random` produces floats between [0, 1] and xoroshiro128+ produces `goog.math.Long` objects across the full 64 bit integer range.
+We can see that xoroshiro128+ is ~10x slower than `Math.random` but it's a bit "apples vs. oranges" as `Math.random` produces floats between [0, 1) and xoroshiro128+ produces `goog.math.Long` objects across the full 64 bit integer range.
 
-We see ~290ns per call (0.29s for 1 000 000 calls) in CLJS vs. ~25ns per call in CLJ. This puts the JVM at around 10x faster than JS for this particular use-case. This is also another "apples vs. oranges" comparison as the JVM and JS runtime environments are obviously very different.
+We see ~200ns per call (0.29s for 1 000 000 calls) in CLJS vs. ~25ns per call in CLJ. This puts the JVM at around 10x faster than JS for this particular use-case. This is also another "apples vs. oranges" comparison as the JVM and JS runtime environments are obviously very different.
 
 To get "apples to apples" timings within JS (and to seed `rand`) I created a "native random long" function that works exactly like the internals of `random-uuid`, but stops halfway to return a single `goog.math.Long` instead of a full UUID:
 
@@ -196,7 +243,9 @@ To get "apples to apples" timings within JS (and to seed `rand`) I created a "na
   16))
 ```
 
-This approach is ~33x slower than xoroshiro128+ and ~540x slower than `Math.random` (due to the string manipulation, I assume).
+This approach is ~50x slower than xoroshiro128+ and ~470x slower than `Math.random` (due to the string manipulation, I assume).
+
+We can also compare the speed of float generation by passing the output of `rand` calls to `long->unit-float` against `Math.random`. In this case, xoroshiro128+ generates floats ~180 times slower than `Math.random` calls.
 
 Overall the use-cases for xoroshiro128+ in CLJS are not as clear cut as CLJ due to lack of native long support.
 
@@ -207,9 +256,7 @@ I recommend xoroshiro128+ when:
 - Wanting to work against the `xoroshiro128.prng/IPRNG` protocol
 - Compatibility with another system implementing xoroshiro128+ is important
 
-I recommend `Math.random` when working with an _unseeded_ PRNG with an _undefined algorithm_ outputting only _a subset of all possible floats_, [specifically those between [0, 1]](https://lemire.me/blog/2017/02/28/how-many-floating-point-numbers-are-in-the-interval-01/) is acceptible.
-
-I recommend `cljc-long.core/native-rand` when generating new seeds for xoroshiro128+ if UUID seeds are not suitable.
+I recommend `Math.random` when working with an _unseeded_ PRNG with an _undefined algorithm_ outputting only _floats on [0, 1)_ is acceptible.
 
 ### CLJS optimizations & environment
 

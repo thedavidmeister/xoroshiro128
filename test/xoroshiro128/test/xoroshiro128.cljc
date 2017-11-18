@@ -5,6 +5,32 @@
   xoroshiro128.test.util
   cljc-long.core))
 
+(deftest ??long->unit-float
+ (doseq [[n e] [["7762799766319050809" 0.42082221856065405]
+                ["1574250636632166272" 0.08534029801366405]
+                ["-3354098680635579586" 0.818173946186207]
+                ["-5039935996627393019" 0.7267845221634341]
+                ["6179743346441658940" 0.33500455808074436]
+                ["-497961364010650667" 0.9730054603662903]]]
+  (is
+   (=
+    e
+    (xoroshiro128.xoroshiro128/long->unit-float (cljc-long.core/long n))))))
+
+#?(:clj
+   (deftest ??long->unit-float:alt
+    (doseq [[n e] [["7762799766319050809" 0.42082221856065405]
+                   ; this one differs from the main algorithm
+                   ["1574250636632166272" 0.08534029801366394]
+                   ["-3354098680635579586" 0.818173946186207]
+                   ["-5039935996627393019" 0.7267845221634341]
+                   ["6179743346441658940" 0.33500455808074436]
+                   ["-497961364010650667" 0.9730054603662903]]]
+     (is
+      (=
+       e
+       (xoroshiro128.xoroshiro128/long->unit-float:alt (cljc-long.core/long n)))))))
+
 (deftest ??seed-extraction
  ; We should be able to take a seed from any point in a sequence and seed a new
  ; identical sequence that starts from the first point.
