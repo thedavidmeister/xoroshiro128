@@ -26,3 +26,6 @@
 (def seed-rand! xoroshiro128.state/seed-rand!)
 (def jump-rand! xoroshiro128.state/jump-rand!)
 (def rand xoroshiro128.state/rand)
+
+(def long->unit-float xoroshiro128.xoroshiro128/long->unit-float)
+(def long->unit-float xoroshiro128.xoroshiro128/long->unit-float:alt)

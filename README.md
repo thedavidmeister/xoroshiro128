@@ -118,6 +118,26 @@ The outputs of Splitmix64 next value, Xoroshiro128+ next value, and the Xoroshir
 
 Dozens of values were generated from https://ideone.com/PuauK5 and fed directly into the expected outputs for the [test suite](https://github.com/thedavidmeister/xoroshiro128/blob/master/test/xoroshiro128/core_test.clj).
 
+## Converting to doubles in the unit interval
+
+It is a common requirement to convert our random 64 bit integers into a random decimal number between 0 and 1. For example, this is a convenient way to insulate ourselves from `goog.math.Long` in cljs as the output of such a conversion will be a native JS float.
+
+Unfortunately the naive approach of simply dividing a generated long by the the maximum long [produces a biased, non-uniform distribution](https://lemire.me/blog/2017/02/28/how-many-floating-point-numbers-are-in-the-interval-01/).
+
+The author of Xoroshiro128+ and Splitmix64 suggests two options for correctly converting from generated 64 bit integers to a 64 bit float between [0, 1).
+
+Their primary recommendation is available for both clj and cljs as `xoroshiro128.core/long->unit-float`.
+
+I recommend using this function if you don't have any specific reason to prefer the alternative.
+
+The alternative recommendation is available for _clj only_ as `xoroshiro128.core/long->unit-float:alt`.
+
+Referencing the alternative algorithm, the authors state:
+
+"This technique is extremely fast, but _you will be generating half the values you could actually generate._"
+
+As far as I'm aware, neither JavaScript nor Google Closure provide a native/fast way to perform the operations required by the alterative algorithm. Even if this can be implemented somehow in JS, I'm dubious whether any speed advantage over the standard algorithm would survive the implementation details (e.g. juggling strings internally). Without this speed advantage the alternative algorithm is clearly inferior, so in my opinion the implementation effort is simply not justified for JavaScript.
+
 ## Performance
 
 All benchmarking code is available under `xoroshiro128.test.performance`.
@@ -182,7 +202,7 @@ LOG: '18.715000000000146'
 
 These numbers seem to wobble by around +/- 20% on subsequent runs.
 
-We can see that xoroshiro128+ is ~16x slower than `Math.random` but it's a bit "apples vs. oranges" as `Math.random` produces floats between [0, 1] and xoroshiro128+ produces `goog.math.Long` objects across the full 64 bit integer range.
+We can see that xoroshiro128+ is ~16x slower than `Math.random` but it's a bit "apples vs. oranges" as `Math.random` produces floats between [0, 1) and xoroshiro128+ produces `goog.math.Long` objects across the full 64 bit integer range.
 
 We see ~290ns per call (0.29s for 1 000 000 calls) in CLJS vs. ~25ns per call in CLJ. This puts the JVM at around 10x faster than JS for this particular use-case. This is also another "apples vs. oranges" comparison as the JVM and JS runtime environments are obviously very different.
 
@@ -207,7 +227,7 @@ I recommend xoroshiro128+ when:
 - Wanting to work against the `xoroshiro128.prng/IPRNG` protocol
 - Compatibility with another system implementing xoroshiro128+ is important
 
-I recommend `Math.random` when working with an _unseeded_ PRNG with an _undefined algorithm_ outputting only _a subset of all possible floats_, [specifically those between [0, 1]](https://lemire.me/blog/2017/02/28/how-many-floating-point-numbers-are-in-the-interval-01/) is acceptible.
+I recommend `Math.random` when working with an _unseeded_ PRNG with an _undefined algorithm_ outputting only _a subset of all possible floats_, [specifically those between [0, 1)](https://lemire.me/blog/2017/02/28/how-many-floating-point-numbers-are-in-the-interval-01/) is acceptible.
 
 I recommend `cljc-long.core/native-rand` when generating new seeds for xoroshiro128+ if UUID seeds are not suitable.
 
