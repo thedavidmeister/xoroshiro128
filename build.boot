@@ -7,7 +7,7 @@
  '[[org.clojure/clojure "1.9.0-RC1"]
    [org.clojure/clojurescript "1.9.946"]
    [org.clojure/tools.namespace "0.2.11"]
-   [thedavidmeister/cljc-long "1.0.0-SNAPSHOT"]
+   [thedavidmeister/cljc-long "1.0.1-SNAPSHOT"]
 
    [samestep/boot-refresh "0.1.0" :scope "test"]
    [adzerk/boot-cljs "2.1.2" :scope "test"]
