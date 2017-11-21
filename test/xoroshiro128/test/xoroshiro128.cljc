@@ -35,7 +35,7 @@
  ; We should be able to take a seed from any point in a sequence and seed a new
  ; identical sequence that starts from the first point.
  ; Xoroshiro128+
- (let [gen-one (x/xoroshiro128+ (cljc-long.core/native-rand))
+ (let [gen-one (x/xoroshiro128+ (x/native-rand))
        gen-one' (-> gen-one x/next x/next x/next)
        a (first (x/seed gen-one'))
        b (second (x/seed gen-one'))
@@ -52,7 +52,7 @@
 (deftest ??xoroshiro128+--args
  ; Check the signature of xoroshiro128+ all works as expected.
  ; 1x 64 bit.
- (let [l (cljc-long.core/native-rand)
+ (let [l (x/native-rand)
        x (x/xoroshiro128+ l)
        seed128 (x/long->seed128 l)]
   (xoroshiro128.test.util/longs-equal?
@@ -60,16 +60,16 @@
    (x/seed x)))
 
  ; 2x 64 bit
- (let [a (cljc-long.core/native-rand)
-       b (cljc-long.core/native-rand)
+ (let [a (x/native-rand)
+       b (x/native-rand)
        x (x/xoroshiro128+ a b)]
   (xoroshiro128.test.util/longs-equal?
    [a b]
    (x/seed x)))
 
  ; 1x 128 bit vector
- (let [seed128 [(cljc-long.core/native-rand)
-                (cljc-long.core/native-rand)]
+ (let [seed128 [(x/native-rand)
+                (x/native-rand)]
        x (x/xoroshiro128+ seed128)]
   (xoroshiro128.test.util/longs-equal?
    seed128

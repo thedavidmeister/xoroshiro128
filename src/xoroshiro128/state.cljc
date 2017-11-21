@@ -8,6 +8,20 @@
 #?(:clj (set! *warn-on-reflection* true))
 #?(:clj (set! *unchecked-math* :warn-on-boxed))
 
+; wrapper around native PRNG functionality to generate longs
+
+(defn native-rand
+ []
+ {:post [(cljc-long.core/long? %)]}
+ #?(:cljs
+    ; lifted from https://cljs.github.io/api/cljs.core/random-uuid
+    (let [hex #(.toString (rand-int 16) 16)]
+     (goog.math.Long.fromString
+      (apply str (take 16 (repeatedly hex)))
+      16))
+    :clj
+    (.nextLong (java.util.Random.))))
+
 ; Simple PRNG
 ; Can be re-seeded ad-hoc using seed-rand!
 ; Relies on mutable state.
@@ -21,7 +35,7 @@
  ([^long a ^long b]
   (reset! rand-state (xoroshiro128.xoroshiro128/xoroshiro128+ a b))))
 
-(seed-rand! (cljc-long.core/native-rand))
+(seed-rand! (native-rand))
 
 (defn jump-rand!
  "Jumps rand. Equivalent to calling rand 2^64 times."

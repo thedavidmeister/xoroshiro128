@@ -9,7 +9,7 @@
  ; We should be able to take a seed from any point in a sequence and seed a new
  ; identical sequence that starts from the first point.
  ; Splitmix64
- (let [gen-one (x/splitmix64 (cljc-long.core/native-rand))
+ (let [gen-one (x/splitmix64 (x/native-rand))
        gen-one' (-> gen-one x/next x/next x/next)
        a (first (x/seed gen-one'))
        gen-two (x/splitmix64 a)]

@@ -24,7 +24,7 @@
 
 (defn bench-native
  []
- (bench cljc-long.core/native-rand))
+ (bench xoroshiro128.state/native-rand))
 
 (defn bench-rand
  []
@@ -44,7 +44,7 @@
      (prn "benchmarking xoroshiro128.state/rand as xoroshiro128.xoroshiro128/long->unit-float")
      (bench-rand-float)
 
-     (prn "benchmarking cljc-long.core/native-rand")
+     (prn "benchmarking xoroshiro128.state/native-rand")
      (bench-native)
 
      (prn "benchmarking Math.random")
