@@ -23,6 +23,7 @@
 (def splitmix64 xoroshiro128.splitmix64/splitmix64)
 (def xoroshiro128+ xoroshiro128.xoroshiro128/xoroshiro128+)
 
+(def native-rand xoroshiro128.state/native-rand)
 (def seed-rand! xoroshiro128.state/seed-rand!)
 (def jump-rand! xoroshiro128.state/jump-rand!)
 (def rand xoroshiro128.state/rand)

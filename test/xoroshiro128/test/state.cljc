@@ -33,7 +33,7 @@
           (map x/value (iterate x/next (x/xoroshiro128+ seed)))))))))))
 
 (deftest x-rand
- (let [seed (cljc-long.core/native-rand)
+ (let [seed (x/native-rand)
        x (x/xoroshiro128+ seed)
        j (x/jump x)
        j' (x/jump j)]
